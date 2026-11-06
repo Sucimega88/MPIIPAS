@@ -1,0 +1,2142 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Petualangan Super Edu - Game Edukasi Kelas 5 SD</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --sky-blue: #5c94fc;
+            --brick-red: #c84c0c;
+            --gold-yellow: #fcbcb0;
+            --pipe-green: #00a800;
+        }
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Fredoka', sans-serif;
+            background-color: #1e293b;
+            touch-action: none;
+        }
+        .font-pixel {
+            font-family: 'Press Start 2P', cursive;
+        }
+        /* Retro Arcade Button Effects */
+        .btn-arcade {
+            transition: all 0.1s ease;
+            box-shadow: 0 6px 0 rgba(0,0,0,0.35), inset 0 2px 0 rgba(255,255,255,0.4);
+        }
+        .btn-arcade:active, .btn-arcade.active-touch {
+            transform: translateY(5px);
+            box-shadow: 0 1px 0 rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.2);
+        }
+        /* Question Block Pulse */
+        @keyframes blockPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.06); }
+        }
+        .animate-block {
+            animation: blockPulse 1.5s infinite ease-in-out;
+        }
+        /* Floating Clouds */
+        @keyframes floatCloud {
+            0% { transform: translateX(-120px); }
+            100% { transform: translateX(100vw); }
+        }
+        .cloud-bg {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.85);
+            border-radius: 50px;
+            pointer-events: none;
+        }
+        /* Custom Scrollbar for Modals */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 8px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #f59e0b;
+            border-radius: 8px;
+        }
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #printableArea, #printableArea * {
+                visibility: visible;
+            }
+            #printableArea {
+                position: fixed;
+                left: 0;
+                top: 0;
+                width: 100%;
+                background: white !important;
+                color: black !important;
+                box-shadow: none !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body class="w-screen h-screen relative flex flex-col justify-between overflow-hidden select-none">
+
+    <!-- ================= 1. START SCREEN OVERLAY ================= -->
+    <div id="startScreen" class="fixed inset-0 z-40 flex flex-col justify-between bg-gradient-to-b from-[#5c94fc] via-[#7eb0ff] to-[#a3c9ff] overflow-y-auto">
+        <!-- Decorative Retro Background Elements -->
+        <div class="inset-0 pointer-events-none fixed overflow-hidden z-0">
+            <!-- Sun -->
+            <div class="absolute top-6 right-8 w-20 h-20 rounded-full bg-yellow-300 border-4 border-yellow-500 shadow-[0_0_40px_#fde047] flex items-center justify-center text-2xl">😊</div>
+            <!-- Floating Mystery Blocks -->
+            <div class="hidden md:flex absolute top-24 left-12 w-14 h-14 bg-amber-400 border-4 border-amber-700 rounded-lg items-center justify-center font-pixel text-xl text-amber-900 shadow-lg animate-block">?</div>
+            <div class="hidden md:flex absolute top-24 left-28 w-14 h-14 bg-amber-700 border-4 border-amber-900 rounded-lg items-center justify-center font-pixel text-xl text-amber-300 shadow-lg">🧱</div>
+            <div class="hidden md:flex absolute top-24 left-44 w-14 h-14 bg-amber-400 border-4 border-amber-700 rounded-lg items-center justify-center font-pixel text-xl text-amber-900 shadow-lg animate-block">?</div>
+            <!-- Green Hills & Ground at bottom -->
+            <div class="absolute bottom-12 -left-10 w-72 h-40 bg-emerald-500 border-4 border-emerald-800 rounded-t-full opacity-90"></div>
+            <div class="absolute bottom-12 right-10 w-96 h-52 bg-emerald-600 border-4 border-emerald-900 rounded-t-full opacity-80"></div>
+            <!-- Classic Green Pipe -->
+            <div class="hidden lg:block absolute bottom-12 right-24 w-20 h-28 bg-gradient-to-r from-green-600 via-green-400 to-green-700 border-4 border-green-950">
+                <div class=" -mx-2 -mt-1 h-8 bg-gradient-to-r from-green-600 via-green-400 to-green-700 border-4 border-green-950 rounded-sm"></div>
+            </div>
+            <!-- Brick Ground Strip -->
+            <div class="absolute bottom-0 inset-x-0 h-12 bg-[#c84c0c] border-t-4 border-amber-950 flex overflow-hidden">
+                <div class="w-full h-full opacity-30" style="background-image: repeating-linear-gradient(90deg, transparent, transparent 36px, #000 36px, #000 40px);"></div>
+            </div>
+        </div>
+
+        <!-- Main Start Content -->
+        <div class="relative z-10 w-full max-w-4xl mx-auto px-4 py-4 md:py-6 flex-1 flex flex-col justify-center items-center">
+            <!-- Game Title Banner -->
+            <div class="bg-gradient-to-b from-red-600 to-red-700 border-4 border-amber-300 rounded-2xl px-6 py-3 md:py-4 shadow-[0_8px_0_#7f1d1d] text-center mb-4 max-w-2xl w-full transform -rotate-1">
+                <div class="inline-block bg-amber-300 text-red-900 font-bold text-xs md:text-sm px-3 py-0.5 rounded-full mb-1 uppercase tracking-wider">🌟 Media Pembelajaran Interaktif IPAS 🌟</div>
+                <h1 class="font-pixel text-lg sm:text-2xl md:text-3xl text-white drop-shadow-[0_3px_0_#000] tracking-wide leading-snug">
+                    PETUALANGAN SUPER EDU
+                </h1>
+                <p class="text-amber-200 font-semibold text-xs sm:text-sm mt-1">Tujuan Pembelajaran: Menjelaskan mekanisme kerja sistem pernapasan dan gerak</p>
+            </div>
+
+            <!-- Form & Setup Card -->
+            <div class="bg-white/95 backdrop-blur-md border-4 border-slate-800 rounded-3xl p-4 sm:p-6 shadow-[0_10px_0_rgba(15,23,42,0.5)] w-full max-w-3xl">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                    <!-- Left Column: Student Identity & Character -->
+                    <div class="space-y-3">
+                        <h2 class="font-bold text-slate-800 text-base sm:text-lg flex items-center gap-2 border-b-2 border-slate-200 pb-1">
+                            <span>🎒</span> Identitas Petualang
+                        </h2>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Nama Lengkap Siswa:</label>
+                            <input type="text" id="inputPlayerName" placeholder="Contoh: Rehan Pratama" maxlength="28"
+                                class="w-full px-3.5 py-2 rounded-xl border-2 border-slate-300 focus:border-blue-600 focus:outline-none font-bold text-slate-800 bg-slate-50 text-sm sm:text-base">
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Kelas:</label>
+                                <select id="inputPlayerClass" class="w-full px-3 py-2 rounded-xl border-2 border-slate-300 focus:border-blue-600 focus:outline-none font-bold text-slate-800 bg-slate-50 text-sm">
+                                    <option value="Kelas 5A">Kelas 5A</option>
+                                    <option value="Kelas 5B">Kelas 5B</option>
+                                    <option value="Kelas 5C">Kelas 5C</option>
+                                    <option value="Kelas 5D">Kelas 5D</option>
+                                    <option value="Kelas 5 SD">Kelas 5 SD</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Mulai Level:</label>
+                                <select id="inputStartLevel" class="w-full px-3 py-2 rounded-xl border-2 border-slate-300 focus:border-blue-600 focus:outline-none font-bold text-slate-800 bg-slate-50 text-sm">
+                                    <option value="0">Level 1: Lembah Hijau</option>
+                                    <option value="1">Level 2: Langit Awan</option>
+                                    <option value="2">Level 3: Kastil Boss</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Character Selection -->
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 uppercase mb-1.5">Pilih Karakter Jagoanmu:</label>
+                            <div class="grid grid-cols-2 gap-2.5">
+                                <button type="button" onclick="selectCharacter('budi')" id="charBtnBudi"
+                                    class="char-select-btn flex items-center gap-2.5 p-2.5 rounded-2xl border-4 border-red-500 bg-red-50 transition-all text-left">
+                                    <div class="w-11 h-11 rounded-xl bg-red-500 border-2 border-slate-900 flex items-center justify-center text-2xl shrink-0 shadow">🧢</div>
+                                    <div>
+                                        <div class="font-bold text-slate-900 text-sm leading-tight">Budi</div>
+                                        <div class="text-[11px] font-semibold text-red-600">Petualang Merah</div>
+                                    </div>
+                                </button>
+                                <button type="button" onclick="selectCharacter('siti')" id="charBtnSiti"
+                                    class="char-select-btn flex items-center gap-2.5 p-2.5 rounded-2xl border-4 border-slate-200 bg-slate-50 hover:bg-emerald-50 transition-all text-left">
+                                    <div class="w-11 h-11 rounded-xl bg-emerald-500 border-2 border-slate-900 flex items-center justify-center text-2xl shrink-0 shadow">👒</div>
+                                    <div>
+                                        <div class="font-bold text-slate-900 text-sm leading-tight">Siti</div>
+                                        <div class="text-[11px] font-semibold text-emerald-600">Petualang Hijau</div>
+                                    </div>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Topic Selector & Info Buttons -->
+                    <div class="space-y-3 flex flex-col justify-between">
+                        <div>
+                            <h2 class="font-bold text-slate-800 text-base sm:text-lg flex items-center gap-2 border-b-2 border-slate-200 pb-1 mb-2">
+                                <span>📚</span> Pilih Fokus Materi Inti
+                            </h2>
+                            <div class="space-y-2">
+                                <button type="button" onclick="selectTopic('campuran')" id="topicBtn_campuran"
+                                    class="topic-btn w-full p-2.5 rounded-xl border-4 border-amber-500 bg-amber-50 flex items-center gap-3 text-left transition">
+                                    <span class="text-2xl bg-amber-400 w-10 h-10 rounded-lg flex items-center justify-center border-2 border-slate-800 shrink-0">⭐</span>
+                                    <div class="flex-1">
+                                        <div class="font-bold text-slate-900 text-sm">Gabungan (Pernapasan & Gerak)</div>
+                                        <div class="text-xs text-slate-600">Paket lengkap evaluasi sistem pernapasan & gerak</div>
+                                    </div>
+                                </button>
+                                <button type="button" onclick="selectTopic('pernapasan')" id="topicBtn_pernapasan"
+                                    class="topic-btn w-full p-2.5 rounded-xl border-2 border-slate-200 bg-slate-50 hover:bg-emerald-50 flex items-center gap-3 text-left transition">
+                                    <span class="text-2xl bg-emerald-400 w-10 h-10 rounded-lg flex items-center justify-center border-2 border-slate-800 shrink-0">🫁</span>
+                                    <div class="flex-1">
+                                        <div class="font-bold text-slate-900 text-sm">Sistem Pernapasan Manusia</div>
+                                        <div class="text-xs text-slate-600">Organ respirologi, inspirasi, ekspirasi & alveolus</div>
+                                    </div>
+                                </button>
+                                <button type="button" onclick="selectTopic('gerak')" id="topicBtn_gerak"
+                                    class="topic-btn w-full p-2.5 rounded-xl border-2 border-slate-200 bg-slate-50 hover:bg-blue-50 flex items-center gap-3 text-left transition">
+                                    <span class="text-2xl bg-blue-400 w-10 h-10 rounded-lg flex items-center justify-center border-2 border-slate-800 shrink-0">🦴</span>
+                                    <div class="flex-1">
+                                        <div class="font-bold text-slate-900 text-sm">Sistem Gerak Manusia</div>
+                                        <div class="text-xs text-slate-600">Rangka tulang, jenis sendi, otot & mekanisme gerak</div>
+                                    </div>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Quick Guide & Study Buttons -->
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
+                            <button type="button" onclick="openInfoModal('tujuan')" class="btn-arcade bg-sky-100 hover:bg-sky-200 text-sky-900 border-2 border-sky-800 rounded-xl py-2 px-1.5 text-xs font-bold flex flex-col items-center gap-1">
+                                <span class="text-base">🎯</span> Tujuan
+                            </button>
+                            <button type="button" onclick="openInfoModal('cara')" class="btn-arcade bg-amber-100 hover:bg-amber-200 text-amber-900 border-2 border-amber-800 rounded-xl py-2 px-1.5 text-xs font-bold flex flex-col items-center gap-1">
+                                <span class="text-base">🎮</span> Panduan
+                            </button>
+                            <button type="button" onclick="openInfoModal('materi')" class="btn-arcade bg-purple-100 hover:bg-purple-200 text-purple-900 border-2 border-purple-800 rounded-xl py-2 px-1.5 text-xs font-bold flex flex-col items-center gap-1">
+                                <span class="text-base">📖</span> Materi Inti
+                            </button>
+                            <button type="button" onclick="openInfoModal('evaluasi')" class="btn-arcade bg-emerald-100 hover:bg-emerald-200 text-emerald-900 border-2 border-emerald-800 rounded-xl py-2 px-1.5 text-xs font-bold flex flex-col items-center gap-1">
+                                <span class="text-base">📝</span> Evaluasi
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Start Action Button -->
+                <div class="mt-5 pt-3 border-t-2 border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3">
+                    <div class="text-xs text-slate-600 font-medium flex items-center gap-2">
+                        <span class="inline-block w-2.5 h-2.5 rounded-full bg-green-500 animate-ping"></span>
+                        Mendukung Keyboard, Layar Sentuh HP, Tablet & Smartboard Kelas!
+                    </div>
+                    <button type="button" onclick="startGame()" class="btn-arcade w-full sm:w-auto bg-gradient-to-b from-green-500 to-green-600 hover:from-green-400 hover:to-green-500 text-white font-pixel text-sm sm:text-base px-8 py-3.5 rounded-2xl border-4 border-green-950 flex items-center justify-center gap-3">
+                        <span>▶ MULAI PETUALANGAN!</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= 2. TOP HUD (IN-GAME STATUS BAR) ================= -->
+    <header id="gameHud" class="hidden fixed top-0 inset-x-0 z-20 p-2 sm:px-4 pointer-events-none">
+        <div class="max-w-6xl mx-auto bg-slate-900/85 backdrop-blur-md border-2 border-amber-400/80 rounded-2xl px-3 py-1.5 sm:py-2 flex flex-wrap items-center justify-between gap-2 text-white shadow-lg pointer-events-auto">
+            <!-- Player & Hearts -->
+            <div class="flex items-center gap-3">
+                <div class="flex items-center gap-1.5 bg-slate-800 px-2.5 py-1 rounded-xl border border-slate-700">
+                    <span id="hudAvatar" class="text-lg">🧢</span>
+                    <div class="leading-none">
+                        <div id="hudName" class="font-bold text-xs sm:text-sm text-amber-300 truncate max-w-[110px] sm:max-w-[160px]">Siswa</div>
+                        <div id="hudClass" class="text-[10px] text-slate-300">Kelas 5A</div>
+                    </div>
+                </div>
+                <!-- Hearts -->
+                <div id="hudHearts" class="flex items-center gap-0.5 text-base sm:text-lg" title="Nyawa Petualang">
+                    ❤️‍🔥❤️‍🔥❤️‍🔥
+                </div>
+            </div>
+
+            <!-- World / Level & Progress -->
+            <div class="hidden md:flex flex-col items-center">
+                <div id="hudWorldTitle" class="font-pixel text-[10px] text-amber-300 tracking-wider uppercase">WORLD 1-1: LEMBAH HIJAU</div>
+                <div class="w-40 h-2.5 bg-slate-700 rounded-full overflow-hidden border border-slate-500 mt-1 relative">
+                    <div id="hudProgressBar" class="h-full bg-gradient-to-r from-green-400 to-emerald-500 w-0 transition-all duration-150"></div>
+                </div>
+            </div>
+
+            <!-- Score, Coins, Quiz Count & Controls -->
+            <div class="flex items-center gap-2 sm:gap-3">
+                <div class="bg-slate-800 px-2.5 py-1 rounded-xl border border-slate-700 flex items-center gap-1.5 text-xs sm:text-sm font-bold">
+                    <span>🪙</span>
+                    <span id="hudCoins" class="text-amber-300 font-pixel text-xs">0</span>
+                </div>
+                <div class="bg-slate-800 px-2.5 py-1 rounded-xl border border-slate-700 flex items-center gap-1.5 text-xs sm:text-sm font-bold" title="Blok Kuis Dijawab">
+                    <span>❓</span>
+                    <span id="hudQuizCount" class="text-emerald-300 font-pixel text-xs">0/4</span>
+                </div>
+                <div class="bg-slate-800 px-2.5 py-1 rounded-xl border border-slate-700 flex items-center gap-1.5 text-xs sm:text-sm font-bold">
+                    <span class="text-amber-400 text-xs">SKOR</span>
+                    <span id="hudScore" class="font-pixel text-xs sm:text-sm text-white">0000</span>
+                </div>
+
+                <!-- Sound & Pause Buttons -->
+                <button type="button" onclick="toggleAudio()" id="btnMute" class="btn-arcade bg-amber-500 hover:bg-amber-400 text-slate-950 border-2 border-slate-950 w-9 h-9 rounded-xl flex items-center justify-center text-base font-bold" title="Suara Efek">
+                    🔊
+                </button>
+                <button type="button" onclick="togglePauseMenu()" class="btn-arcade bg-slate-700 hover:bg-slate-600 text-white border-2 border-slate-950 w-9 h-9 rounded-xl flex items-center justify-center text-sm font-bold" title="Menu / Jeda">
+                    ⏸
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- ================= 3. MAIN HTML5 GAME CANVAS ================= -->
+    <main class="relative w-full h-full flex-1 flex items-center justify-center overflow-hidden bg-[#5c94fc]">
+        <canvas id="gameCanvas" class="w-full h-full block"></canvas>
+
+        <!-- Floating Notification Toast (Power-Up / Checkpoint / Hint) -->
+        <div id="gameToast" class="pointer-events-none fixed top-16 left-1/2 -translate-x-1/2 z-30 opacity-0 transition-all duration-300 transform -translate-y-2">
+            <div id="gameToastInner" class="bg-slate-900/90 text-amber-300 border-2 border-amber-400 px-4 py-2 rounded-2xl shadow-xl font-bold text-xs sm:text-sm flex items-center gap-2">
+                <span>⭐</span> <span id="gameToastText">Sundul Blok [?] dari bawah untuk membuka Kuis!</span>
+            </div>
+        </div>
+    </main>
+
+    <!-- ================= 4. ERGONOMIC ON-SCREEN TOUCH / SMARTBOARD CONTROLS ================= -->
+    <div id="touchControls" class="hidden fixed bottom-0 inset-x-0 z-20 p-3 sm:p-5 pointer-events-none flex justify-between items-end">
+        <!-- Left Directional Pad -->
+        <div class="flex items-center gap-3 pointer-events-auto">
+            <button type="button" id="btnLeft"
+                class="btn-arcade w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-slate-800/85 active:bg-amber-400 active:text-slate-950 text-white border-4 border-slate-950 flex flex-col items-center justify-center shadow-xl">
+                <span class="text-2xl sm:text-3xl leading-none">◀</span>
+                <span class="text-[10px] font-bold mt-0.5 uppercase tracking-wider">Kiri</span>
+            </button>
+            <button type="button" id="btnRight"
+                class="btn-arcade w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-slate-800/85 active:bg-amber-400 active:text-slate-950 text-white border-4 border-slate-950 flex flex-col items-center justify-center shadow-xl">
+                <span class="text-2xl sm:text-3xl leading-none">▶</span>
+                <span class="text-[10px] font-bold mt-0.5 uppercase tracking-wider">Kanan</span>
+            </button>
+        </div>
+
+        <!-- Center Smart Hint for Desktop/Smartboard -->
+        <div class="hidden lg:flex bg-slate-900/75 text-white/90 px-4 py-1.5 rounded-full border border-white/20 text-xs font-medium items-center gap-3">
+            <span>⌨️ Keyboard: <b>◀ ▶ / A D</b> (Jalan) & <b>SPASI / ▲</b> (Lompat)</span>
+            <span>|</span>
+            <span>👆 Sundul blok <b>[?]</b> dari bawah!</span>
+        </div>
+
+        <!-- Right Jump & Action Pad -->
+        <div class="flex items-center gap-3 pointer-events-auto">
+            <button type="button" id="btnJump"
+                class="btn-arcade w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-b from-red-500 to-red-600 active:from-amber-400 active:to-amber-500 text-white border-4 border-slate-950 flex flex-col items-center justify-center shadow-2xl">
+                <span class="text-2xl sm:text-3xl leading-none">▲</span>
+                <span class="font-pixel text-[9px] sm:text-[10px] mt-1">LOMPAT</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- ================= 5. QUIZ MODAL ([?] QUESTION BLOCK / SHIELD / BOSS) ================= -->
+    <div id="quizModal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white border-4 border-slate-900 rounded-3xl max-w-xl w-full p-5 sm:p-6 shadow-[0_12px_0_#0f172a] relative animate-bounce-once">
+            <!-- Modal Header Badge -->
+            <div class="flex items-center justify-between gap-2 mb-3">
+                <div id="quizModalBadge" class="inline-flex items-center gap-2 bg-amber-400 text-slate-950 font-pixel text-xs px-3 py-1.5 rounded-xl border-2 border-slate-900">
+                    <span>[?]</span> <span id="quizModalType">BLOK KUIS EDUKASI</span>
+                </div>
+                <div id="quizRewardTag" class="text-xs font-bold bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full border border-emerald-300">
+                    🎁 Hadiah: +100 Poin & Jamur Pintar!
+                </div>
+            </div>
+
+            <!-- Question Text -->
+            <div class="bg-slate-100 border-2 border-slate-300 rounded-2xl p-4 mb-4">
+                <p id="quizQuestionText" class="text-slate-900 font-bold text-base sm:text-lg leading-snug">
+                    Pertanyaan akan muncul di sini...
+                </p>
+            </div>
+
+            <!-- Answer Options Grid -->
+            <div id="quizOptionsContainer" class="grid grid-cols-1 gap-2.5 mb-4">
+                <!-- Populated dynamically -->
+            </div>
+
+            <!-- Explanation & Continue Box (Shown after answering) -->
+            <div id="quizFeedbackBox" class="hidden rounded-2xl p-4 border-2 mb-3">
+                <div id="quizFeedbackTitle" class="font-bold text-base mb-1"></div>
+                <p id="quizFeedbackDesc" class="text-xs sm:text-sm text-slate-700 leading-relaxed"></p>
+            </div>
+
+            <button type="button" id="btnQuizContinue" onclick="closeQuizModal()" class="hidden btn-arcade w-full bg-blue-600 hover:bg-blue-500 text-white font-pixel text-xs sm:text-sm py-3.5 rounded-2xl border-4 border-slate-950">
+                LANJUTKAN PETUALANGAN ▶
+            </button>
+        </div>
+    </div>
+
+    <!-- ================= 6. INFO MODAL (TUJUAN, MATERI, CARA MAIN) ================= -->
+    <div id="infoModal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white border-4 border-slate-900 rounded-3xl max-w-2xl w-full max-h-[85vh] flex flex-col shadow-[0_12px_0_#0f172a] overflow-hidden">
+            <div class="bg-amber-400 border-b-4 border-slate-900 px-5 py-3.5 flex items-center justify-between">
+                <h3 id="infoModalTitle" class="font-pixel text-xs sm:text-sm text-slate-950">INFORMASI GAME</h3>
+                <button type="button" onclick="closeInfoModal()" class="bg-red-500 hover:bg-red-600 text-white font-bold w-8 h-8 rounded-xl border-2 border-slate-900 flex items-center justify-center">✕</button>
+            </div>
+            <div id="infoModalBody" class="p-5 overflow-y-auto space-y-4 text-slate-800 text-sm sm:text-base leading-relaxed">
+                <!-- Dynamic Content -->
+            </div>
+            <div class="p-4 bg-slate-100 border-t-2 border-slate-200 text-right">
+                <button type="button" onclick="closeInfoModal()" class="btn-arcade bg-slate-800 text-white font-bold px-6 py-2.5 rounded-xl border-2 border-slate-950 text-sm">
+                    Tutup & Kembali
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= 7. PAUSE / LEVEL TRANSITION MODAL ================= -->
+    <div id="pauseModal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white border-4 border-slate-900 rounded-3xl max-w-sm w-full p-6 text-center shadow-[0_12px_0_#0f172a]">
+            <div class="text-4xl mb-2">⏸️</div>
+            <h3 class="font-pixel text-base text-slate-900 mb-1">PERMAINAN DIJEDA</h3>
+            <p class="text-xs text-slate-600 mb-5">Istirahat sejenak atau atur ulang petualanganmu.</p>
+            <div class="space-y-2.5">
+                <button type="button" onclick="togglePauseMenu()" class="btn-arcade w-full bg-green-500 hover:bg-green-400 text-white font-bold py-3 rounded-xl border-2 border-slate-900">
+                    ▶ Lanjutkan Bermain
+                </button>
+                <button type="button" onclick="openInfoModal('materi')" class="btn-arcade w-full bg-purple-500 hover:bg-purple-400 text-white font-bold py-3 rounded-xl border-2 border-slate-900">
+                    📖 Buka Contekan Materi
+                </button>
+                <button type="button" onclick="restartCurrentLevel()" class="btn-arcade w-full bg-amber-400 hover:bg-amber-300 text-slate-900 font-bold py-3 rounded-xl border-2 border-slate-900">
+                    🔄 Ulangi Level Ini
+                </button>
+                <button type="button" onclick="backToMainMenu()" class="btn-arcade w-full bg-red-500 hover:bg-red-400 text-white font-bold py-3 rounded-xl border-2 border-slate-900">
+                    🏠 Kembali ke Menu Utama
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= 8. END OF GAME REPORT & CERTIFICATE SCREEN ================= -->
+    <div id="reportScreen" class="hidden fixed inset-0 z-50 bg-slate-900/95 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+        <div id="printableArea" class="bg-white border-4 border-amber-500 rounded-3xl max-w-3xl w-full p-5 sm:p-8 shadow-2xl my-auto">
+            <!-- Header Banner Sertifikat Evaluasi -->
+            <div class="text-center border-b-2 border-slate-200 pb-4 mb-4">
+                <div class="inline-block bg-amber-100 text-amber-800 font-bold text-xs px-3 py-1 rounded-full border border-amber-300 mb-1">
+                    🏆 SERTIFIKAT & RAPOR EVALUASI IPAS KELAS 5 SD
+                </div>
+                <div id="reportStars" class="text-3xl sm:text-4xl my-1">⭐⭐⭐</div>
+                <h2 id="reportFeedbackTitle" class="font-pixel text-sm sm:text-lg text-slate-900 leading-snug">
+                    Luar Biasa! Kamu Master Sistem Pernapasan & Gerak!
+                </h2>
+                <p class="text-xs text-slate-500 mt-1">Tujuan Pembelajaran: Menjelaskan mekanisme kerja sistem pernapasan dan gerak manusia</p>
+            </div>
+
+            <!--Student Info & Stats Grid -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 mb-4">
+                <div class="bg-slate-50 p-3 rounded-2xl border-2 border-slate-200">
+                    <div class="text-[11px] font-bold text-slate-500 uppercase">Nama Petualang</div>
+                    <div id="repName" class="font-bold text-slate-900 text-sm sm:text-base truncate">-</div>
+                    <div id="repClass" class="text-xs text-slate-600">-</div>
+                </div>
+                <div class="bg-amber-50 p-3 rounded-2xl border-2 border-amber-200">
+                    <div class="text-[11px] font-bold text-amber-700 uppercase">Total Skor Akhir</div>
+                    <div id="repScore" class="font-pixel text-base sm:text-lg text-amber-900 mt-0.5">0</div>
+                    <div id="repCoins" class="text-xs text-amber-700 font-semibold">🪙 0 Koin</div>
+                </div>
+                <div class="bg-emerald-50 p-3 rounded-2xl border-2 border-emerald-200">
+                    <div class="text-[11px] font-bold text-emerald-700 uppercase">Nilai Evaluasi</div>
+                    <div id="repAccuracy" class="font-pixel text-base sm:text-lg text-emerald-900 mt-0.5">100%</div>
+                    <div id="repCorrectCount" class="text-xs text-emerald-700 font-semibold">0 dari 0 Benar</div>
+                </div>
+                <div class="bg-blue-50 p-3 rounded-2xl border-2 border-blue-200">
+                    <div class="text-[11px] font-bold text-blue-700 uppercase">Topik Materi</div>
+                    <div id="repTopic" class="font-bold text-blue-950 text-xs sm:text-sm mt-0.5">Gabungan</div>
+                    <div id="repLevelReached" class="text-xs text-blue-700 font-semibold">Selesai 3 Level</div>
+                </div>
+            </div>
+
+            <!-- Umpan Balik Pedagogis (Feedback Box) -->
+            <div id="repFeedbackCard" class="mb-4 p-4 rounded-2xl border-2 border-emerald-300 bg-emerald-50">
+                <div class="font-bold text-emerald-900 text-xs sm:text-sm uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                    <span>💬</span> Umpan Balik Pembelajaran (Feedback):
+                </div>
+                <p id="repFeedbackDetail" class="text-xs sm:text-sm text-slate-700 leading-relaxed">
+                    Selamat! Kamu telah memahami mekanisme kerja sistem pernapasan dan sistem gerak manusia dengan sangat baik.
+                </p>
+            </div>
+
+            <!-- Pedagogical Review List -->
+            <div class="mb-5">
+                <h4 class="font-bold text-slate-800 text-xs sm:text-sm uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                    <span>📋</span> Detail Evaluasi & Pembahasan Soal:
+                </h4>
+                <div id="repReviewList" class="max-h-44 overflow-y-auto space-y-2 pr-1 bg-slate-50 p-3 rounded-2xl border border-slate-200 text-xs sm:text-sm">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="no-print flex flex-wrap items-center justify-between gap-3 pt-3 border-t-2 border-slate-200">
+                <button type="button" onclick="window.print()" class="btn-arcade bg-sky-600 hover:bg-sky-500 text-white font-bold px-5 py-3 rounded-xl border-2 border-slate-950 text-xs sm:text-sm flex items-center gap-2">
+                    <span>🖨️</span> Cetak Sertifikat / Rapor (PDF)
+                </button>
+                <div class="flex items-center gap-2">
+                    <button type="button" onclick="playAgainSameSettings()" class="btn-arcade bg-green-500 hover:bg-green-400 text-white font-bold px-5 py-3 rounded-xl border-2 border-slate-950 text-xs sm:text-sm">
+                        🔄 Main Lagi
+                    </button>
+                    <button type="button" onclick="backToMainMenu()" class="btn-arcade bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold px-5 py-3 rounded-xl border-2 border-slate-950 text-xs sm:text-sm">
+                        🏠 Ganti Topik / Siswa
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= JAVASCRIPT GAME ENGINE & EDUCATIONAL CONTENT ================= -->
+    <script>
+        /* ============================================================================
+         * 1. SOUND ENGINE (WEB AUDIO API 8-BIT RETRO SYNTHESIZER)
+         * ============================================================================ */
+        class RetroAudioEngine {
+            constructor() {
+                this.ctx = null;
+                this.muted = false;
+            }
+            init() {
+                if (!this.ctx) {
+                    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                    if (AudioCtx) this.ctx = new AudioCtx();
+                }
+                if (this.ctx && this.ctx.state === 'suspended') {
+                    this.ctx.resume();
+                }
+            }
+            playTone(freq, type, duration, startTime = 0, vol = 0.15, slideFreq = null) {
+                if (this.muted || !this.ctx) return;
+                try {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = type;
+                    const now = this.ctx.currentTime + startTime;
+                    osc.frequency.setValueAtTime(freq, now);
+                    if (slideFreq) {
+                        osc.frequency.exponentialRampToValueAtTime(slideFreq, now + duration);
+                    }
+                    gain.gain.setValueAtTime(vol, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start(now);
+                    osc.stop(now + duration);
+                } catch (e) {
+                    // Ignore audio context errors on restricted browsers
+                }
+            }
+            jump() {
+                this.init();
+                this.playTone(180, 'square', 0.22, 0, 0.14, 520);
+            }
+            coin() {
+                this.init();
+                this.playTone(987.77, 'square', 0.08, 0, 0.12);
+                this.playTone(1318.51, 'square', 0.25, 0.08, 0.12);
+            }
+            blockBump() {
+                this.init();
+                this.playTone(130, 'triangle', 0.12, 0, 0.2, 80);
+            }
+            stomp() {
+                this.init();
+                this.playTone(240, 'sawtooth', 0.15, 0, 0.15, 480);
+            }
+            powerUp() {
+                this.init();
+                const notes = [330, 392, 659, 523, 587, 784];
+                notes.forEach((n, i) => this.playTone(n, 'square', 0.09, i * 0.06, 0.12));
+            }
+            correct() {
+                this.init();
+                const notes = [523.25, 659.25, 783.99, 1046.50];
+                notes.forEach((n, i) => this.playTone(n, 'triangle', 0.14, i * 0.08, 0.18));
+            }
+            wrong() {
+                this.init();
+                this.playTone(220, 'sawtooth', 0.2, 0, 0.15, 160);
+                this.playTone(160, 'sawtooth', 0.35, 0.2, 0.15, 110);
+            }
+            levelClear() {
+                this.init();
+                const melody = [
+                    { f: 523.25, d: 0.12, t: 0 },
+                    { f: 659.25, d: 0.12, t: 0.13 },
+                    { f: 783.99, d: 0.12, t: 0.26 },
+                    { f: 1046.5, d: 0.25, t: 0.39 },
+                    { f: 783.99, d: 0.15, t: 0.66 },
+                    { f: 1046.5, d: 0.45, t: 0.83 }
+                ];
+                melody.forEach(m => this.playTone(m.f, 'square', m.d, m.t, 0.15));
+            }
+        }
+        const sfx = new RetroAudioEngine();
+
+        /* ============================================================================
+         * 2. BANK SOAL KHUSUS IPAS: SISTEM PERNAPASAN & SISTEM GERAK MANUSIA
+         * ============================================================================ */
+        const QUESTION_BANK = {
+            pernapasan: [
+                {
+                    q: "Urutan saluran pernapasan manusia dari luar ke dalam yang benar adalah...",
+                    options: [
+                        "Hidung ➔ Faring ➔ Laring ➔ Trakea ➔ Bronkus ➔ Bronkiolus ➔ Alveolus",
+                        "Hidung ➔ Trakea ➔ Faring ➔ Laring ➔ Bronkus ➔ Alveolus",
+                        "Hidung ➔ Laring ➔ Faring ➔ Bronkus ➔ Trakea ➔ Alveolus",
+                        "Hidung ➔ Bronkus ➔ Trakea ➔ Laring ➔ Faring ➔ Alveolus"
+                    ],
+                    ans: 0,
+                    exp: "Udara masuk melalui Rongga Hidung, melewati Faring (tekak), Laring (pangkal tenggorokan), Trakea (batang tenggorokan), Bronkus, Bronkiolus, hingga Alveolus."
+                },
+                {
+                    q: "Pada sistem pernapasan manusia, pertukaran gas oksigen (O2) dan karbon dioksida (CO2) secara difusi terjadi di bagian...",
+                    options: ["Trakea", "Bronkus", "Alveolus", "Diafragma"],
+                    ans: 2,
+                    exp: "Alveolus adalah gelembung-gelembung halus di paru-paru yang dikelilingi kapiler darah sebagai tempat pertukaran O2 dan CO2."
+                },
+                {
+                    q: "Bagaimana mekanisme yang terjadi pada saat fase Inspirasi (menghirup udara) pada pernapasan perut?",
+                    options: [
+                        "Otot diafragma berkontraksi (mendatar), rongga dada membesar, dan udara masuk",
+                        "Otot diafragma berelaksasi (melengkung), rongga dada mengecil, dan udara masuk",
+                        "Otot antartulang rusuk berelaksasi dan paru-paru mengempis",
+                        "Tekanan udara di dalam paru-paru meningkat tinggi sehingga udara masuk"
+                    ],
+                    ans: 0,
+                    exp: "Saat inspirasi pernapasan perut, otot diafragma berkontraksi (posisi mendatar), volume rongga dada membesar, tekanan mengecil, sehingga udara luar masuk."
+                },
+                {
+                    q: "Pada saat kita menghembuskan napas (Ekspirasi) pada pernapasan dada, mekanisme yang terjadi adalah...",
+                    options: [
+                        "Otot antartulang rusuk berkontraksi dan tulang rusuk terangkat",
+                        "Otot antartulang rusuk berelaksasi, tulang rusuk turun, rongga dada mengecil, udara keluar",
+                        "Otot diafragma berkontraksi kuat sehingga udara keluar",
+                        "Rongga dada membesar dan tekanan udara di paru-paru menurun"
+                    ],
+                    ans: 1,
+                    exp: "Ekspirasi pernapasan dada terjadi ketika otot antartulang rusuk berelaksasi (tulang rusuk turun), rongga dada menyempit, tekanan paru-paru naik, dan udara terdorong keluar."
+                },
+                {
+                    q: "Di dalam rongga hidung terdapat rambut-rambut halus dan selaput lendir (mukus) yang berfungsi untuk...",
+                    options: [
+                        "Menyerap oksigen langsung ke pembuluh darah otak",
+                        "Menyaring kotoran/debu serta mengatur suhu dan kelembapan udara yang masuk",
+                        "Memompa udara agar lebih cepat sampai ke lambung",
+                        "Mengubah gas karbon dioksida menjadi oksigen"
+                    ],
+                    ans: 1,
+                    exp: "Rambut hidung menyaring partikel debu, sedangkan selaput lendir menghangatkan dan melembapkan udara pernapasan."
+                },
+                {
+                    q: "Batang tenggorokan (Trakea) tersusun atas cincin tulang rawan dan memiliki jaringan silia yang berfungsi untuk...",
+                    options: [
+                        "Menolak dan mendorong keluar debu atau benda asing yang lolos dari hidung",
+                        "Menghasilkan gas karbon dioksida untuk dibuang",
+                        "Menghubungkan paru-paru langsung dengan lambung",
+                        "Menyimpan cadangan udara saat menyelam"
+                    ],
+                    ans: 0,
+                    exp: "Silia (rambut getar) pada dinding trakea berfungsi menyapu dan mendorong keluar debu/kotoran agar tidak masuk ke paru-paru."
+                },
+                {
+                    q: "Katup tulang rawan pada pangkal tenggorokan yang menutup saluran napas saat kita menelan makanan agar tidak tersedak disebut...",
+                    options: ["Alveolus", "Epiglotis", "Pleura", "Bronkiolus"],
+                    ans: 1,
+                    exp: "Epiglotis bekerja membuka dan menutup secara otomatis agar makanan masuk ke kerongkongan dan bukan ke saluran pernapasan."
+                },
+                {
+                    q: "[HOTS] Ketika seseorang sedang berlari cepat seperti karakter di game ini, frekuensi pernapasannya menjadi lebih cepat karena...",
+                    options: [
+                        "Otot tubuh membutuhkan lebih banyak oksigen (O2) untuk menghasilkan energi gerak",
+                        "Paru-paru menyusut saat tubuh sedang bergerak aktif",
+                        "Tulang membutuhkan karbon dioksida untuk tumbuh",
+                        "Otot diafragma berhenti bekerja saat berlari"
+                    ],
+                    ans: 0,
+                    exp: "Saat bergerak/berolahraga, sel-sel otot bekerja keras dan memerlukan pasokan oksigen lebih banyak untuk pembakaran energi serta membuang sisa CO2."
+                }
+            ],
+            gerak: [
+                {
+                    q: "Tulang disebut sebagai alat gerak pasif, sedangkan otot disebut sebagai alat gerak aktif karena...",
+                    options: [
+                        "Tulang dapat berkontraksi sendiri tanpa bantuan otot",
+                        "Otot memiliki kemampuan berkontraksi dan berelaksasi untuk menggerakkan tulang",
+                        "Tulang lebih lunak dibandingkan jaringan otot",
+                        "Otot hanya berfungsi melindungi organ dalam tanpa bergerak"
+                    ],
+                    ans: 1,
+                    exp: "Tulang tidak dapat bergerak sendiri (pasif). Otot adalah alat gerak aktif karena mampu berkontraksi (memendek) dan berelaksasi (memanjang) sehingga menarik tulang untuk bergerak."
+                },
+                {
+                    q: "Hubungan antartulang yang memungkinkan gerakan bebas ke segala arah, seperti pada gelang bahu dan pangkal paha, disebut...",
+                    options: ["Sendi Engsel", "Sendi Peluru", "Sendi Pelana", "Sendi Putar"],
+                    ans: 1,
+                    exp: "Sendi Peluru memungkinkan gerakan ke segala arah karena ujung tulang berbentuk bonggol masuk ke lekukan tulang lainnya (contoh: bahu dan paha)."
+                },
+                {
+                    q: "Sendi yang terdapat pada siku tangan dan lutut kaki hanya memungkinkan gerakan satu arah (seperti pintu), yaitu...",
+                    options: ["Sendi Engsel", "Sendi Putar", "Sendi Geser", "Sendi Pelana"],
+                    ans: 0,
+                    exp: "Sendi Engsel bekerja seperti engsel pintu yang bergerak satu arah (menekuk dan meluruskan), terdapat pada siku dan lutut."
+                },
+                {
+                    q: "Sendi yang memungkinkan gerakan memutar, seperti pertemuan tulang leher (tulang atlas) dengan tulang tengkorak kepala, adalah...",
+                    options: ["Sendi Pelana", "Sendi Putar", "Sendi Engsel", "Sendi Kaku"],
+                    ans: 1,
+                    exp: "Sendi Putar memungkinkan salah satu tulang berputar terhadap tulang lainnya sebagai poros, contohnya saat kepala menoleh ke kiri dan kanan."
+                },
+                {
+                    q: "Bagaimana mekanisme kerja otot bisep dan trisep saat kita menekuk lengan bawah ke atas (fleksi)?",
+                    options: [
+                        "Otot bisep berkontraksi (menggembung) dan otot trisep berelaksasi",
+                        "Otot bisep berelaksasi dan otot trisep berkontraksi",
+                        "Kedua otot bisep dan trisep sama-sama berelaksasi",
+                        "Sendi siku mengunci tanpa melibatkan kerja otot"
+                    ],
+                    ans: 0,
+                    exp: "Otot bisep dan trisep bekerja secara antagonis (berlawanan). Saat lengan ditekuk ke atas, otot bisep berkontraksi dan otot trisep berelaksasi."
+                },
+                {
+                    q: "Jenis otot yang bekerja secara sadar (di bawah kesadaran kita) dan melekat pada rangka tubuh adalah...",
+                    options: ["Otot Polos", "Otot Jantung", "Otot Lurik (Otot Rangka)", "Otot Lambung"],
+                    ans: 2,
+                    exp: "Otot lurik melekat pada rangka dan bekerja secara sadar (volunter) sesuai perintah otak ketika kita berjalan, berlari, atau melompat."
+                },
+                {
+                    q: "Otot yang bekerja terus-menerus tanpa lelah secara tidak sadar untuk memompa darah ke seluruh tubuh adalah...",
+                    options: ["Otot Lurik", "Otot Polos", "Otot Jantung", "Otot Bisep"],
+                    ans: 2,
+                    exp: "Otot jantung memiliki bentuk serabut bercabang dan bekerja secara involunter (tanpa disadari) terus-menerus memompa darah."
+                },
+                {
+                    q: "[HOTS] Kebiasaan duduk yang salah dengan posisi punggung membungkuk ke samping membentuk huruf 'S' dapat menyebabkan kelainan tulang belakang yang disebut...",
+                    options: ["Lordosis", "Kifosis", "Skoliosis", "Osteoporosis"],
+                    ans: 2,
+                    exp: "Skoliosis adalah kelainan tulang belakang melengkung ke samping (huruf S). Kifosis membungkuk ke belakang, sedangkan Lordosis melengkung berlebihan ke depan."
+                }
+            ]
+        };
+
+        /* ============================================================================
+         * 3. GAME STATE & CONFIGURATION
+         * ============================================================================ */
+        const state = {
+            playerName: "Petualang Hebat",
+            playerClass: "Kelas 5A",
+            character: "budi", // 'budi' or 'siti'
+            topic: "campuran", // 'campuran', 'pernapasan', 'gerak'
+            currentLevelIdx: 0,
+            score: 0,
+            coins: 0,
+            hearts: 3,
+            maxHearts: 3,
+            isRunning: false,
+            isPaused: false,
+            inQuiz: false,
+            questionsPool: [],
+            answerHistory: [], // { q, correct, chosenAns, correctAns }
+            activeQuizContext: null // { type: 'block'|'shield'|'boss', blockObj, enemyObj }
+        };
+
+        // Controls Input Map
+        const keys = { left: false, right: false, jump: false };
+
+        function selectCharacter(charId) {
+            state.character = charId;
+            sfx.coin();
+            const budiBtn = document.getElementById('charBtnBudi');
+            const sitiBtn = document.getElementById('charBtnSiti');
+            if (charId === 'budi') {
+                budiBtn.className = "char-select-btn flex items-center gap-2.5 p-2.5 rounded-2xl border-4 border-red-500 bg-red-50 transition-all text-left";
+                sitiBtn.className = "char-select-btn flex items-center gap-2.5 p-2.5 rounded-2xl border-4 border-slate-200 bg-slate-50 hover:bg-emerald-50 transition-all text-left";
+            } else {
+                sitiBtn.className = "char-select-btn flex items-center gap-2.5 p-2.5 rounded-2xl border-4 border-emerald-500 bg-emerald-50 transition-all text-left";
+                budiBtn.className = "char-select-btn flex items-center gap-2.5 p-2.5 rounded-2xl border-4 border-slate-200 bg-slate-50 hover:bg-red-50 transition-all text-left";
+            }
+        }
+
+        function selectTopic(topicId) {
+            state.topic = topicId;
+            sfx.coin();
+            ['campuran', 'pernapasan', 'gerak'].forEach(t => {
+                const btn = document.getElementById('topicBtn_' + t);
+                if (!btn) return;
+                if (t === topicId) {
+                    btn.className = "topic-btn w-full p-2.5 rounded-xl border-4 border-amber-500 bg-amber-50 flex items-center gap-3 text-left transition shadow-sm";
+                } else {
+                    btn.className = "topic-btn w-full p-2.5 rounded-xl border-2 border-slate-200 bg-slate-50 hover:bg-slate-100 flex items-center gap-3 text-left transition";
+                }
+            });
+        }
+
+        function prepareQuestionsPool() {
+            let raw = [];
+            if (state.topic === 'pernapasan') {
+                raw = [...QUESTION_BANK.pernapasan];
+            } else if (state.topic === 'gerak') {
+                raw = [...QUESTION_BANK.gerak];
+            } else {
+                raw = [...QUESTION_BANK.pernapasan, ...QUESTION_BANK.gerak];
+            }
+            // Shuffle
+            for (let i = raw.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [raw[i], raw[j]] = [raw[j], raw[i]];
+            }
+            state.questionsPool = raw;
+        }
+
+        function getNextQuestion() {
+            if (state.questionsPool.length === 0) {
+                prepareQuestionsPool();
+            }
+            return state.questionsPool.pop();
+        }
+
+        /* ============================================================================
+         * 4. LEVEL BLUEPRINTS (3 PROGRESSIVE MARIO WORLDS)
+         * ============================================================================ */
+        const LEVEL_CONFIGS = [
+            {
+                id: 1,
+                name: "WORLD 1-1: LEMBAH HIJAU",
+                subtitle: "Dasar Eksplorasi & Sundulan Blok [?]",
+                skyTop: "#5c94fc",
+                skyBottom: "#9ec2ff",
+                groundColor: "#c84c0c",
+                grassColor: "#00a800",
+                length: 2800,
+                bossRequired: false
+            },
+            {
+                id: 2,
+                name: "WORLD 1-2: LANGIT AWAN CERIA",
+                subtitle: "Platform Bergerak & Tantangan Menengah",
+                skyTop: "#38bdf8",
+                skyBottom: "#fde68a",
+                groundColor: "#9333ea",
+                grassColor: "#f59e0b",
+                length: 3100,
+                bossRequired: false
+            },
+            {
+                id: 3,
+                name: "WORLD 1-3: BENTENG RAJA KUIS",
+                subtitle: "Tantangan Akhir HOTS & Gerbang Kastil",
+                skyTop: "#1e1b4b",
+                skyBottom: "#4c1d95",
+                groundColor: "#475569",
+                grassColor: "#dc2626",
+                length: 3200,
+                bossRequired: true
+            }
+        ];
+
+        // World Entities Container
+        let player = null;
+        let cameraX = 0;
+        let platforms = [];
+        let blocks = [];
+        let pipes = [];
+        let coins = [];
+        let enemies = [];
+        let particles = [];
+        let floatingTexts = [];
+        let decorClouds = [];
+        let decorHills = [];
+        let flagPole = null;
+
+        const GRAVITY = 0.62;
+        const GROUND_HEIGHT = 84; // From bottom of canvas
+
+        class Player {
+            constructor() {
+                this.resetForLevel();
+            }
+            resetForLevel() {
+                this.w = 42;
+                this.h = 52;
+                this.x = 100;
+                this.y = 200;
+                this.vx = 0;
+                this.vy = 0;
+                this.speed = 5.4;
+                this.jumpForce = -13.8;
+                this.grounded = false;
+                this.facing = 1; // 1 right, -1 left
+                this.animFrame = 0;
+                this.invincibleTimer = 0;
+                this.superAuraTimer = 0; // Power-up from answering fast/accurately
+                this.checkpointX = 100;
+            }
+        }
+
+        function buildLevel(levelIdx) {
+            const cfg = LEVEL_CONFIGS[levelIdx];
+            platforms = [];
+            blocks = [];
+            pipes = [];
+            coins = [];
+            enemies = [];
+            particles = [];
+            floatingTexts = [];
+            decorClouds = [];
+            decorHills = [];
+
+            // Decorative Clouds & Hills
+            for (let x = 80; x < cfg.length; x += 320) {
+                decorClouds.push({
+                    x: x + Math.random() * 120,
+                    y: 60 + Math.random() * 90,
+                    w: 90 + Math.random() * 50,
+                    speed: 0.2 + Math.random() * 0.25
+                });
+                decorHills.push({
+                    x: x - 40,
+                    w: 180 + (x % 3) * 60,
+                    h: 70 + (x % 2) * 45
+                });
+            }
+
+            // Ground segments with safe gaps
+            const gaps = levelIdx === 0 ? [950, 1850] : (levelIdx === 1 ? [850, 1550, 2250] : [800, 1500, 2200]);
+            let curX = 0;
+            const gapWidth = 115;
+
+            gaps.forEach(gapX => {
+                platforms.push({ x: curX, yOffset: 0, w: gapX - curX, h: GROUND_HEIGHT, type: 'ground' });
+                // Rescue bridge cloud or coin arc above gap
+                coins.push({ x: gapX + 25, yOffset: 150, collected: false, bob: 0 });
+                coins.push({ x: gapX + 60, yOffset: 175, collected: false, bob: 1 });
+                coins.push({ x: gapX + 95, yOffset: 150, collected: false, bob: 2 });
+                curX = gapX + gapWidth;
+            });
+            platforms.push({ x: curX, yOffset: 0, w: cfg.length - curX + 400, h: GROUND_HEIGHT, type: 'ground' });
+
+            // Moving Platforms for Level 2 & 3
+            if (levelIdx >= 1) {
+                platforms.push({ x: 855, yOffset: 110, w: 105, h: 24, type: 'moving', minX: 830, maxX: 980, vx: 1.5 });
+                platforms.push({ x: 1555, yOffset: 130, w: 105, h: 24, type: 'moving', minX: 1520, maxX: 1680, vx: -1.8 });
+            }
+
+            // Classic Green Pipes (Some act as checkpoints)
+            const pipePositions = [460, 1180, 1680, 2380];
+            pipePositions.forEach((px, idx) => {
+                pipes.push({
+                    x: px,
+                    w: 64,
+                    h: idx % 2 === 0 ? 78 : 102,
+                    isCheckpoint: idx === 1 || idx === 2,
+                    activated: false
+                });
+            });
+
+            // Brick rows & Golden [?] Question Blocks
+            const blockClusters = [
+                { startX: 250, yOffset: 135, layout: ['brick', 'question', 'brick'] },
+                { startX: 620, yOffset: 145, layout: ['brick', 'question', 'brick', 'question', 'brick'] },
+                { startX: 1080, yOffset: 225, layout: ['question'] },
+                { startX: 1320, yOffset: 140, layout: ['brick', 'question', 'brick'] },
+                { startX: 1980, yOffset: 145, layout: ['question', 'brick', 'question'] },
+                { startX: 2100, yOffset: 235, layout: ['brick', 'question', 'brick'] }
+            ];
+
+            const blockSize = 46;
+            blockClusters.forEach(cluster => {
+                cluster.layout.forEach((bType, i) => {
+                    const bx = cluster.startX + i * blockSize;
+                    blocks.push({
+                        x: bx,
+                        yOffset: cluster.yOffset,
+                        w: blockSize,
+                        h: blockSize,
+                        type: bType, // 'brick' or 'question'
+                        used: false,
+                        bounceY: 0
+                    });
+                    // Add coins above some bricks
+                    if (bType === 'brick' && i % 2 === 0) {
+                        coins.push({ x: bx + 11, yOffset: cluster.yOffset + 64, collected: false, bob: i });
+                    }
+                });
+            });
+
+            // Ground Coin Trails
+            [360, 400, 1270, 1310, 1780, 1820, 2480, 2520].forEach((cx, i) => {
+                coins.push({ x: cx, yOffset: 45, collected: false, bob: i * 0.5 });
+            });
+
+            // Patrolling Enemies (Monster Malas / Goomba style)
+            const enemySpawns = [
+                { x: 560, minX: 530, maxX: 890, name: "Monster Malas" },
+                { x: 1120, minX: 1080, maxX: 1480, name: "Virus Bingung" },
+                { x: 1420, minX: 1260, maxX: 1650, name: "Monster Malas" },
+                { x: 2050, minX: 1980, maxX: 2340, name: "Kurcaci Kantuk" },
+                { x: 2520, minX: 2450, maxX: 2680, name: "Penjaga Kastil" }
+            ];
+
+            enemySpawns.forEach((es, idx) => {
+                enemies.push({
+                    x: es.x,
+                    yOffset: 0,
+                    w: 42,
+                    h: 40,
+                    vx: (idx % 2 === 0 ? 1.5 : -1.6) * (1 + levelIdx * 0.18),
+                    minX: es.minX,
+                    maxX: es.maxX,
+                    name: es.name,
+                    squashed: false,
+                    squashTimer: 0
+                });
+            });
+
+            // End of Level Flagpole & Castle
+            flagPole = {
+                x: cfg.length - 180,
+                reached: false,
+                flagYRatio: 0, // 0 at top, 1 at bottom
+                bossDefeated: !cfg.bossRequired
+            };
+
+            if (!player) player = new Player();
+            player.resetForLevel();
+            cameraX = 0;
+            updateHUD();
+        }
+
+        /* ============================================================================
+         * 5. START, HUD & NAVIGATION HANDLERS
+         * ============================================================================ */
+        function startGame() {
+            const nameInput = document.getElementById('inputPlayerName').value.trim();
+            const classInput = document.getElementById('inputPlayerClass').value;
+            const startLvl = parseInt(document.getElementById('inputStartLevel').value, 10) || 0;
+
+            state.playerName = nameInput || "Petualang Kelas 5";
+            state.playerClass = classInput;
+            state.currentLevelIdx = startLvl;
+            state.score = 0;
+            state.coins = 0;
+            state.hearts = 3;
+            state.answerHistory = [];
+
+            sfx.init();
+            sfx.powerUp();
+
+            prepareQuestionsPool();
+            buildLevel(state.currentLevelIdx);
+
+            document.getElementById('startScreen').classList.add('hidden');
+            document.getElementById('reportScreen').classList.add('hidden');
+            document.getElementById('gameHud').classList.remove('hidden');
+            document.getElementById('touchControls').classList.remove('hidden');
+
+            state.isRunning = true;
+            state.isPaused = false;
+            resizeCanvas();
+            showToast(`🌟 Selamat datang di ${LEVEL_CONFIGS[state.currentLevelIdx].name}! Sundul blok [?] dari bawah!`);
+        }
+
+        function updateHUD() {
+            document.getElementById('hudAvatar').textContent = state.character === 'budi' ? '🧢' : '👒';
+            document.getElementById('hudName').textContent = state.playerName;
+            document.getElementById('hudClass').textContent = state.playerClass;
+            document.getElementById('hudHearts').textContent = '❤️'.repeat(Math.max(0, state.hearts)) + '🖤'.repeat(Math.max(0, state.maxHearts - state.hearts));
+            document.getElementById('hudCoins').textContent = state.coins;
+            document.getElementById('hudScore').textContent = String(state.score).padStart(4, '0');
+
+            const cfg = LEVEL_CONFIGS[state.currentLevelIdx];
+            document.getElementById('hudWorldTitle').textContent = cfg.name;
+
+            const usedQuestions = blocks.filter(b => b.type === 'question' && b.used).length;
+            const totalQuestions = blocks.filter(b => b.type === 'question').length;
+            document.getElementById('hudQuizCount').textContent = `${usedQuestions}/${totalQuestions}`;
+
+            if (player && flagPole) {
+                const pct = Math.min(100, Math.max(0, Math.round((player.x / flagPole.x) * 100)));
+                document.getElementById('hudProgressBar').style.width = pct + '%';
+            }
+        }
+
+        let toastTimeout = null;
+        function showToast(msg) {
+            const toast = document.getElementById('gameToast');
+            document.getElementById('gameToastText').textContent = msg;
+            toast.classList.remove('opacity-0', '-translate-y-2');
+            toast.classList.add('opacity-100', 'translate-y-0');
+            if (toastTimeout) clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toast.classList.add('opacity-0', '-translate-y-2');
+                toast.classList.remove('opacity-100', 'translate-y-0');
+            }, 3400);
+        }
+
+        function toggleAudio() {
+            sfx.muted = !sfx.muted;
+            document.getElementById('btnMute').textContent = sfx.muted ? '🔇' : '🔊';
+            if (!sfx.muted) sfx.coin();
+        }
+
+        function togglePauseMenu() {
+            if (!state.isRunning || state.inQuiz) return;
+            state.isPaused = !state.isPaused;
+            document.getElementById('pauseModal').classList.toggle('hidden', !state.isPaused);
+        }
+
+        function restartCurrentLevel() {
+            document.getElementById('pauseModal').classList.add('hidden');
+            state.isPaused = false;
+            state.hearts = 3;
+            buildLevel(state.currentLevelIdx);
+            showToast("🔄 Level diulang dari awal!");
+        }
+
+        function backToMainMenu() {
+            state.isRunning = false;
+            state.isPaused = false;
+            document.getElementById('pauseModal').classList.add('hidden');
+            document.getElementById('reportScreen').classList.add('hidden');
+            document.getElementById('gameHud').classList.add('hidden');
+            document.getElementById('touchControls').classList.add('hidden');
+            document.getElementById('startScreen').classList.remove('hidden');
+        }
+
+        function playAgainSameSettings() {
+            document.getElementById('reportScreen').classList.add('hidden');
+            state.currentLevelIdx = 0;
+            state.score = 0;
+            state.coins = 0;
+            state.hearts = 3;
+            state.answerHistory = [];
+            prepareQuestionsPool();
+            buildLevel(0);
+            document.getElementById('gameHud').classList.remove('hidden');
+            document.getElementById('touchControls').classList.remove('hidden');
+            state.isRunning = true;
+            state.isPaused = false;
+        }
+
+        /* ============================================================================
+         * 6. EDUCATIONAL QUIZ POP-UP SYSTEM ([?] BLOCK, EMERGENCY SHIELD & BOSS)
+         * ============================================================================ */
+        function triggerQuizModal(contextType, refObj = null) {
+            state.inQuiz = true;
+            keys.left = false;
+            keys.right = false;
+            keys.jump = false;
+
+            const qData = getNextQuestion();
+            state.activeQuizContext = { type: contextType, refObj, qData };
+
+            const modal = document.getElementById('quizModal');
+            const badge = document.getElementById('quizModalBadge');
+            const typeLabel = document.getElementById('quizModalType');
+            const rewardTag = document.getElementById('quizRewardTag');
+            const qText = document.getElementById('quizQuestionText');
+            const optsContainer = document.getElementById('quizOptionsContainer');
+            const fbBox = document.getElementById('quizFeedbackBox');
+            const btnContinue = document.getElementById('btnQuizContinue');
+
+            fbBox.classList.add('hidden');
+            btnContinue.classList.add('hidden');
+
+            if (contextType === 'block') {
+                badge.className = "inline-flex items-center gap-2 bg-amber-400 text-slate-950 font-pixel text-xs px-3 py-1.5 rounded-xl border-2 border-slate-900";
+                typeLabel.textContent = "BLOK KUIS [?]";
+                rewardTag.textContent = "🎁 Hadiah: +100 Poin & Aura Bintang Super!";
+            } else if (contextType === 'shield') {
+                badge.className = "inline-flex items-center gap-2 bg-sky-400 text-slate-950 font-pixel text-xs px-3 py-1.5 rounded-xl border-2 border-slate-900";
+                typeLabel.textContent = "🛡️ PERISAI KUIS DARURAT!";
+                rewardTag.textContent = "⚡ Jawab benar agar tidak kehilangan ❤️ Nyawa!";
+            } else if (contextType === 'boss') {
+                badge.className = "inline-flex items-center gap-2 bg-red-500 text-white font-pixel text-xs px-3 py-1.5 rounded-xl border-2 border-slate-900";
+                typeLabel.textContent = "👑 TANTANGAN RAJA KASTIL!";
+                rewardTag.textContent = "🏆 Jawab benar untuk membuka Gerbang Kemenangan!";
+            }
+
+            qText.textContent = qData.q;
+            optsContainer.innerHTML = '';
+
+            const letters = ['A', 'B', 'C', 'D'];
+            qData.options.forEach((optText, idx) => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = "btn-arcade w-full text-left p-3 sm:p-3.5 rounded-2xl border-2 border-slate-800 bg-slate-50 hover:bg-amber-100 font-bold text-slate-800 text-sm sm:text-base flex items-center gap-3 transition";
+                btn.innerHTML = `
+                    <span class="w-8 h-8 rounded-xl bg-amber-400 border-2 border-slate-900 flex items-center justify-center font-pixel text-xs text-slate-950 shrink-0">${letters[idx]}</span>
+                    <span class="flex-1">${optText}</span>
+                `;
+                btn.onclick = () => submitQuizAnswer(idx, btn);
+                optsContainer.appendChild(btn);
+            });
+
+            modal.classList.remove('hidden');
+        }
+
+        function submitQuizAnswer(selectedIndex, clickedBtn) {
+            const ctx = state.activeQuizContext;
+            if (!ctx || ctx.answered) return;
+            ctx.answered = true;
+
+            const qData = ctx.qData;
+            const isCorrect = selectedIndex === qData.ans;
+
+            // Record for Teacher Evaluation Report
+            state.answerHistory.push({
+                q: qData.q,
+                correct: isCorrect,
+                chosenAns: qData.options[selectedIndex],
+                correctAns: qData.options[qData.ans],
+                exp: qData.exp
+            });
+
+            // Highlight Buttons
+            const allBtns = document.getElementById('quizOptionsContainer').children;
+            for (let i = 0; i < allBtns.length; i++) {
+                allBtns[i].disabled = true;
+                if (i === qData.ans) {
+                    allBtns[i].className = "w-full text-left p-3 sm:p-3.5 rounded-2xl border-3 border-emerald-700 bg-emerald-100 font-bold text-emerald-950 text-sm sm:text-base flex items-center gap-3";
+                } else if (i === selectedIndex && !isCorrect) {
+                    allBtns[i].className = "w-full text-left p-3 sm:p-3.5 rounded-2xl border-3 border-red-700 bg-red-100 font-bold text-red-950 text-sm sm:text-base flex items-center gap-3";
+                } else {
+                    allBtns[i].classList.add('opacity-50');
+                }
+            }
+
+            const fbBox = document.getElementById('quizFeedbackBox');
+            const fbTitle = document.getElementById('quizFeedbackTitle');
+            const fbDesc = document.getElementById('quizFeedbackDesc');
+            fbBox.classList.remove('hidden');
+
+            if (isCorrect) {
+                sfx.correct();
+                fbBox.className = "rounded-2xl p-4 border-2 border-emerald-500 bg-emerald-50 mb-3";
+                fbTitle.className = "font-bold text-base text-emerald-800 mb-1";
+
+                if (ctx.type === 'block') {
+                    state.score += 100;
+                    state.coins += 5;
+                    player.superAuraTimer = 420; // 7 seconds of Super Star Aura
+                    fbTitle.textContent = "🌟 JAWABAN BENAR! (+100 Poin & Mode Bintang Super!)";
+                    spawnFloatingText(player.x, getCanvasGroundY() - 90, "+100 PINTAR!", "#fbbf24");
+                } else if (ctx.type === 'shield') {
+                    state.score += 50;
+                    player.invincibleTimer = 120;
+                    if (ctx.refObj) ctx.refObj.squashed = true;
+                    fbTitle.textContent = "🛡️ PERISAI AKTIF! Kamu Selamat & Monster Kalah! (+50 Poin)";
+                } else if (ctx.type === 'boss') {
+                    state.score += 250;
+                    flagPole.bossDefeated = true;
+                    fbTitle.textContent = "👑 LUAR BIASA! Raja Kuis Mengakui Kehebatanmu! (+250 Poin)";
+                }
+            } else {
+                sfx.wrong();
+                fbBox.className = "rounded-2xl p-4 border-2 border-red-400 bg-red-50 mb-3";
+                fbTitle.className = "font-bold text-base text-red-800 mb-1";
+
+                if (ctx.type === 'block') {
+                    state.score += 10;
+                    fbTitle.textContent = "💡 Kurang Tepat! Tapi tetap semangat belajar ya (+10 Poin)";
+                } else if (ctx.type === 'shield') {
+                    state.hearts -= 1;
+                    player.invincibleTimer = 120;
+                    fbTitle.textContent = "💔 Perisai Gagal! Kamu kehilangan 1 Nyawa. Hati-hati ya!";
+                } else if (ctx.type === 'boss') {
+                    flagPole.bossDefeated = true; // Still allow level completion after learning explanation
+                    state.score += 50;
+                    fbTitle.textContent = "💡 Belum Tepat, namun Gerbang Kastil tetap terbuka setelah kamu membaca pembahasan ini!";
+                }
+            }
+
+            fbDesc.textContent = "Pembahasan: " + qData.exp;
+            document.getElementById('btnQuizContinue').classList.remove('hidden');
+            updateHUD();
+        }
+
+        function closeQuizModal() {
+            document.getElementById('quizModal').classList.add('hidden');
+            state.inQuiz = false;
+
+            // Check if player ran out of hearts
+            if (state.hearts <= 0) {
+                state.hearts = 3;
+                player.x = player.checkpointX;
+                player.y = 120;
+                player.vx = 0;
+                player.vy = 0;
+                showToast("💪 Nyawa diisi ulang di Checkpoint! Ayo coba lagi!");
+                updateHUD();
+            }
+
+            // If boss was just defeated at flagpole, complete level
+            if (state.activeQuizContext && state.activeQuizContext.type === 'boss' && flagPole.bossDefeated) {
+                completeCurrentLevel();
+            }
+            state.activeQuizContext = null;
+        }
+
+        /* ============================================================================
+         * 7. INFO MODALS (TUJUAN, PANDUAN, MATERI INTI + VIDEO, EVALUASI)
+         * ============================================================================ */
+        const VIDEO_PERNAPASAN_URL = "https://github.com/Sucimega88/videosistempernapasan/raw/refs/heads/main/WhatsApp%20Video%202026-11-06%20at%2018.48.34.mp4";
+
+        function openInfoModal(tab) {
+            sfx.coin();
+            const modal = document.getElementById('infoModal');
+            const title = document.getElementById('infoModalTitle');
+            const body = document.getElementById('infoModalBody');
+
+            if (tab === 'tujuan') {
+                title.textContent = "🎯 TUJUAN PEMBELAJARAN (IPAS KELAS 5 SD)";
+                body.innerHTML = `
+                    <div class="bg-gradient-to-r from-sky-500 to-blue-600 text-white p-4 rounded-2xl shadow border-2 border-slate-900">
+                        <div class="text-xs font-bold uppercase tracking-wider text-sky-100 mb-1">Capaian Utama Mata Pelajaran IPAS:</div>
+                        <div class="text-base sm:text-lg font-bold leading-snug">
+                            "Peserta didik mampu menjelaskan mekanisme kerja sistem pernapasan dan sistem gerak manusia beserta cara menjaga kesehatannya."
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div class="bg-emerald-50 border-2 border-emerald-200 p-4 rounded-2xl">
+                            <h4 class="font-bold text-emerald-900 mb-2 flex items-center gap-1.5"><span>🫁</span> Indikator Sistem Pernapasan:</h4>
+                            <ul class="list-disc pl-5 space-y-1.5 text-xs sm:text-sm text-slate-700">
+                                <li>Mengurutkan organ saluran pernapasan manusia dari <b>Hidung hingga Alveolus</b> beserta fungsinya.</li>
+                                <li>Menjelaskan mekanisme <b>Inspirasi (menghirup udara)</b> dan <b>Ekspirasi (menghembuskan udara)</b> pada pernapasan dada maupun perut.</li>
+                                <li>Menjelaskan proses pertukaran gas Oksigen (O₂) dan Karbon Dioksida (CO₂) di <b>Alveolus</b>.</li>
+                            </ul>
+                        </div>
+                        <div class="bg-blue-50 border-2 border-blue-200 p-4 rounded-2xl">
+                            <h4 class="font-bold text-blue-900 mb-2 flex items-center gap-1.5"><span>🦴</span> Indikator Sistem Gerak:</h4>
+                            <ul class="list-disc pl-5 space-y-1.5 text-xs sm:text-sm text-slate-700">
+                                <li>Membedakan peran <b>Rangka/Tulang (alat gerak pasif)</b> dan <b>Otot (alat gerak aktif)</b>.</li>
+                                <li>Mengidentifikasi macam-macam <b>Sendi</b> (Engsel, Peluru, Putar, Pelana) pada aktivitas tubuh sehari-hari.</li>
+                                <li>Menjelaskan mekanisme kerja otot <b>Bisep dan Trisep</b> serta kelainan tulang belakang (Skoliosis, Kifosis, Lordosis).</li>
+                            </ul>
+                        </div>
+                    </div>
+                `;
+            } else if (tab === 'materi') {
+                title.textContent = "📖 MATERI INTI & VIDEO IPAS: PERNAPASAN & GERAK";
+                body.innerHTML = `
+                    <!-- Video Pembelajaran Interaktif -->
+                    <div class="bg-slate-900 text-white p-4 rounded-2xl border-4 border-amber-400 shadow-lg">
+                        <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+                            <div class="font-bold text-amber-300 text-sm sm:text-base flex items-center gap-2">
+                                <span>🎬</span> Video Materi Inti: Mekanisme Sistem Pernapasan Manusia
+                            </div>
+                            <span class="text-[11px] bg-amber-400 text-slate-950 font-bold px-2.5 py-0.5 rounded-full">Putar & Simak Video</span>
+                        </div>
+                        <div class="rounded-xl overflow-hidden border-2 border-slate-700 bg-black aspect-video w-full">
+                            <video id="materiVideoPlayer" controls preload="metadata" playsinline class="w-full h-full object-contain">
+                                <source src="${VIDEO_PERNAPASAN_URL}" type="video/mp4">
+                                Browser perangkatmu tidak mendukung pemutar video HTML5.
+                            </video>
+                        </div>
+                        <p class="text-xs text-slate-300 mt-2">
+                            💡 <b>Tips Belajar:</b> Tonton video di atas untuk memahami alur masuknya udara ke paru-paru dan pergerakan diafragma sebelum memulai petualangan!
+                        </p>
+                    </div>
+
+                    <!-- Rangkuman Materi Inti 2 Kolom -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs sm:text-sm">
+                        <div class="p-3.5 rounded-2xl bg-emerald-50 border-2 border-emerald-200 space-y-2">
+                            <div class="font-bold text-emerald-900 text-base flex items-center gap-1.5">🫁 1. Sistem Pernapasan Manusia</div>
+                            <p>• <b>Alur Organ:</b> Hidung ➔ Faring ➔ Laring (Epiglotis) ➔ Trakea (Batang Tenggorokan) ➔ Bronkus ➔ Bronkiolus ➔ <b>Alveolus</b>.</p>
+                            <p>• <b>Alveolus:</b> Gelembung halus di paru-paru tempat pertukaran gas <b>Oksigen (O₂)</b> ke darah dan pelepasan <b>Karbon Dioksida (CO₂)</b>.</p>
+                            <div class="bg-white p-2.5 rounded-xl border border-emerald-200 space-y-1">
+                                <div class="font-bold text-emerald-800">Mekanisme Pernapasan:</div>
+                                <p>1. <b>Inspirasi (Tarik Napas):</b> Otot diafragma berkontraksi (mendatar) / tulang rusuk terangkat ➔ Rongga dada membesar ➔ Udara masuk.</p>
+                                <p>2. <b>Ekspirasi (Hembus Napas):</b> Otot diafragma berelaksasi (melengkung) / tulang rusuk turun ➔ Rongga dada mengecil ➔ Udara keluar.</p>
+                            </div>
+                        </div>
+
+                        <div class="p-3.5 rounded-2xl bg-blue-50 border-2 border-blue-200 space-y-2">
+                            <div class="font-bold text-blue-900 text-base flex items-center gap-1.5">🦴 2. Sistem Gerak Manusia</div>
+                            <p>• <b>Kerja Sama Gerak:</b> <b>Tulang</b> adalah alat gerak <i>pasif</i>, sedangkan <b>Otot</b> adalah alat gerak <i>aktif</i> karena mampu berkontraksi & berelaksasi.</p>
+                            <p>• <b>3 Jenis Otot:</b> Otot Lurik (rangka/sadar), Otot Polos (organ dalam/tak sadar), Otot Jantung (memompa darah).</p>
+                            <div class="bg-white p-2.5 rounded-xl border border-blue-200 space-y-1">
+                                <div class="font-bold text-blue-800">Jenis-Jenis Sendi Utama:</div>
+                                <p>• <b>Sendi Engsel (1 arah):</b> Siku tangan dan lutut kaki.</p>
+                                <p>• <b>Sendi Peluru (Segala arah):</b> Gelang bahu dan pangkal paha.</p>
+                                <p>• <b>Sendi Putar (Memutar):</b> Tulang leher dan tengkorak.</p>
+                                <p>• <b>Kelainan Tulang:</b> <i>Skoliosis</i> (bengkok huruf S), <i>Kifosis</i> (bungkuk), <i>Lordosis</i> (melengkung ke depan).</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (tab === 'evaluasi') {
+                title.textContent = "📝 SISTEM EVALUASI & UMPAN BALIK PEMBELAJARAN";
+                body.innerHTML = `
+                    <div class="space-y-3 text-xs sm:text-sm">
+                        <div class="bg-emerald-50 border-2 border-emerald-200 p-4 rounded-2xl">
+                            <h4 class="font-bold text-emerald-900 text-base mb-1.5">📊 Bagaimana Evaluasi Dilakukan di Dalam Game?</h4>
+                            <p class="text-slate-700 mb-2">Evaluasi terintegrasi langsung ke dalam mekanik permainan Super Mario sehingga siswa belajar sambil berpetualang tanpa merasa tertekan:</p>
+                            <ul class="list-disc pl-5 space-y-1 text-slate-700">
+                                <li><b>Blok Kuis [?] (Formatif):</b> Setiap menyundul blok emas <span class="font-bold">[?]</span>, siswa menjawab soal IPAS tentang Sistem Pernapasan & Gerak (+100 Poin & Mode Bintang Super).</li>
+                                <li><b>Perisai Kuis Darurat:</b> Saat menyentuh monster, siswa diberi kesempatan menjawab soal penyelamatan agar tidak kehilangan nyawa.</li>
+                                <li><b>Tantangan Raja Kuis (HOTS):</b> Di ujung Level 3 sebelum bendera kastil, siswa menyelesaikan soal analisis tingkat tinggi (HOTS).</li>
+                            </ul>
+                        </div>
+                        <div class="bg-amber-50 border-2 border-amber-200 p-4 rounded-2xl">
+                            <h4 class="font-bold text-amber-900 text-base mb-1.5">💬 Umpan Balik Otomatis (Feedback):</h4>
+                            <ul class="list-disc pl-5 space-y-1 text-slate-700">
+                                <li><b>Umpan Balik Instan:</b> Setiap selesai memilih jawaban A/B/C/D, layar langsung menampilkan penjelasan ilmiah mengapa jawaban tersebut benar atau kurang tepat.</li>
+                                <li><b>Rapor & Rekomendasi Akhir:</b> Di akhir permainan, sistem menghitung persentase penguasaan materi, memberikan predikat Bintang (⭐ s.d. ⭐⭐⭐), rekomendasi belajar, serta <b>Sertifikat Rapor PDF yang siap dicetak</b>.</li>
+                            </ul>
+                        </div>
+                    </div>
+                `;
+            } else {
+                title.textContent = "🎮 PANDUAN PENGGUNAAN GAME PETUALANGAN SUPER EDU";
+                body.innerHTML = `
+                    <div class="space-y-3 text-xs sm:text-sm">
+                        <div class="flex items-start gap-3 bg-sky-50 p-3 rounded-2xl border-2 border-sky-200">
+                            <span class="text-2xl">1️⃣</span>
+                            <div><b>Persiapan & Materi Inti:</b> Isi Nama Siswa, Kelas, Karakter (Budi/Siti), dan Fokus Materi IPAS. Klik tombol <b>📖 Materi Inti</b> untuk menonton video Sistem Pernapasan terlebih dahulu.</div>
+                        </div>
+                        <div class="flex items-start gap-3 bg-slate-50 p-3 rounded-2xl border-2 border-slate-200">
+                            <span class="text-2xl">🕹️</span>
+                            <div><b>Kontrol Gerakan Karakter:</b> Gunakan tombol <b>◀ Kiri / ▶ Kanan</b> dan <b>▲ LOMPAT</b> di layar sentuh (HP/Tablet/Smartboard) atau tombol Panah / WASD & Spasi di Keyboard komputer.</div>
+                        </div>
+                        <div class="flex items-start gap-3 bg-amber-50 p-3 rounded-2xl border-2 border-amber-200">
+                            <span class="text-2xl">❓</span>
+                            <div><b>Sundul Blok Kuis [?]:</b> Lompatlah tepat di bawah blok emas <b>[?]</b> untuk memunculkan soal evaluasi IPAS. Jawaban benar memberi <b>+100 Poin</b> dan kekuatan <b>Aura Bintang Super</b>!</div>
+                        </div>
+                        <div class="flex items-start gap-3 bg-red-50 p-3 rounded-2xl border-2 border-red-200">
+                            <span class="text-2xl">👾</span>
+                            <div><b>Hadapi Monster & Capai Bendera:</b> Lompat dan injak bagian <b>atas kepala monster</b> (+50 Poin). Lewati pipa hijau <i>Checkpoint</i> hingga mencapai Tiang Bendera Kastil untuk mengunduh <b>Rapor Evaluasi</b>!</div>
+                        </div>
+                    </div>
+                `;
+            }
+            modal.classList.remove('hidden');
+        }
+
+        function closeInfoModal() {
+            // Pause embedded video if playing when modal is closed
+            const vid = document.getElementById('materiVideoPlayer');
+            if (vid && !vid.paused) {
+                vid.pause();
+            }
+            document.getElementById('infoModal').classList.add('hidden');
+        }
+
+        /* ============================================================================
+         * 8. CANVAS RENDERING & MARIO PLATFORMER PHYSICS LOOP
+         * ============================================================================ */
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        function getCanvasGroundY() {
+            return canvas.height - GROUND_HEIGHT;
+        }
+
+        function spawnParticles(x, y, color, count = 10) {
+            for (let i = 0; i < count; i++) {
+                particles.push({
+                    x, y,
+                    vx: (Math.random() - 0.5) * 8,
+                    vy: (Math.random() - 0.8) * 8,
+                    size: 4 + Math.random() * 5,
+                    color,
+                    life: 28
+                });
+            }
+        }
+
+        function spawnFloatingText(x, y, text, color = "#fde047") {
+            floatingTexts.push({ x, y, text, color, life: 45 });
+        }
+
+        function updatePhysics() {
+            if (!state.isRunning || state.isPaused || state.inQuiz || !player) return;
+
+            const groundY = getCanvasGroundY();
+            const cfg = LEVEL_CONFIGS[state.currentLevelIdx];
+
+            // 1. Player Horizontal Movement
+            const speedMult = player.superAuraTimer > 0 ? 1.25 : 1;
+            if (keys.left) {
+                player.vx = -player.speed * speedMult;
+                player.facing = -1;
+                player.animFrame += 0.22;
+            } else if (keys.right) {
+                player.vx = player.speed * speedMult;
+                player.facing = 1;
+                player.animFrame += 0.22;
+            } else {
+                player.vx *= 0.78;
+                if (Math.abs(player.vx) < 0.1) player.vx = 0;
+                player.animFrame = 0;
+            }
+
+            // Jump trigger
+            if (keys.jump && player.grounded) {
+                player.vy = player.jumpForce * (player.superAuraTimer > 0 ? 1.08 : 1);
+                player.grounded = false;
+                sfx.jump();
+                spawnParticles(player.x + player.w / 2, player.y + player.h, "#ffffff", 5);
+            }
+
+            // Apply Gravity
+            player.vy += GRAVITY;
+            if (player.vy > 14) player.vy = 14;
+
+            // Move X & Constrain
+            player.x += player.vx;
+            if (player.x < 20) player.x = 20;
+
+            // Check Pipe Horizontal Collisions
+            pipes.forEach(pipe => {
+                const pipeTop = groundY - pipe.h;
+                if (player.x + player.w > pipe.x && player.x < pipe.x + pipe.w &&
+                    player.y + player.h > pipeTop + 6) {
+                    if (player.vx > 0) player.x = pipe.x - player.w;
+                    else if (player.vx < 0) player.x = pipe.x + pipe.w;
+                }
+            });
+
+            // Move Y
+            player.y += player.vy;
+            player.grounded = false;
+
+            // 2. Ground & Moving Platform Collisions
+            platforms.forEach(plat => {
+                if (plat.type === 'moving') {
+                    plat.x += plat.vx;
+                    if (plat.x < plat.minX || plat.x > plat.maxX) plat.vx *= -1;
+                }
+                const platTop = groundY - plat.yOffset;
+                if (player.x + player.w * 0.8 > plat.x && player.x + player.w * 0.2 < plat.x + plat.w) {
+                    if (player.vy >= 0 && player.y + player.h >= platTop && player.y + player.h - player.vy <= platTop + 16) {
+                        player.y = platTop - player.h;
+                        player.vy = 0;
+                        player.grounded = true;
+                        if (plat.type === 'moving') player.x += plat.vx;
+                    }
+                }
+            });
+
+            // 3. Pipe Top Collisions + Checkpoint Activation
+            pipes.forEach(pipe => {
+                const pipeTop = groundY - pipe.h;
+                if (player.x + player.w * 0.85 > pipe.x && player.x + player.w * 0.15 < pipe.x + pipe.w) {
+                    if (player.vy >= 0 && player.y + player.h >= pipeTop && player.y + player.h - player.vy <= pipeTop + 16) {
+                        player.y = pipeTop - player.h;
+                        player.vy = 0;
+                        player.grounded = true;
+                        if (pipe.isCheckpoint && !pipe.activated) {
+                            pipe.activated = true;
+                            player.checkpointX = pipe.x + 10;
+                            sfx.powerUp();
+                            spawnFloatingText(pipe.x, pipeTop - 25, "🚩 CHECKPOINT!", "#4ade80");
+                            showToast("🚩 Pipa Checkpoint Aktif! Posisi aman tersimpan.");
+                        }
+                    }
+                }
+            });
+
+            // 4. Brick & [?] Question Block Collisions
+            blocks.forEach(b => {
+                if (b.bounceY < 0) b.bounceY += 2;
+                const by = groundY - b.yOffset + b.bounceY;
+
+                const overlapX = player.x + player.w * 0.85 > b.x && player.x + player.w * 0.15 < b.x + b.w;
+                if (overlapX) {
+                    // Landing on top of block
+                    if (player.vy >= 0 && player.y + player.h >= by && player.y + player.h - player.vy <= by + 16) {
+                        player.y = by - player.h;
+                        player.vy = 0;
+                        player.grounded = true;
+                    }
+                    // Hitting block from below (Classic Mario Head-Bump!)
+                    else if (player.vy < 0 && player.y <= by + b.h && player.y - player.vy >= by + b.h - 18) {
+                        player.y = by + b.h;
+                        player.vy = 3;
+                        b.bounceY = -12;
+                        sfx.blockBump();
+                        spawnParticles(b.x + b.w / 2, by, "#fbbf24", 8);
+
+                        if (b.type === 'question' && !b.used) {
+                            b.used = true;
+                            updateHUD();
+                            setTimeout(() => triggerQuizModal('block', b), 120);
+                        } else if (b.type === 'brick') {
+                            state.score += 5;
+                            updateHUD();
+                        }
+                    }
+                }
+            });
+
+            // 5. Coin Collection
+            coins.forEach(c => {
+                if (c.collected) return;
+                c.bob += 0.08;
+                const cy = groundY - c.yOffset + Math.sin(c.bob) * 5;
+                if (player.x + player.w > c.x && player.x < c.x + 26 &&
+                    player.y + player.h > cy && player.y < cy + 26) {
+                    c.collected = true;
+                    state.coins += 1;
+                    state.score += 10;
+                    sfx.coin();
+                    spawnParticles(c.x + 12, cy + 12, "#fde047", 6);
+                    spawnFloatingText(c.x, cy, "+10", "#fde047");
+                    updateHUD();
+                }
+            });
+
+            // 6. Enemy Patrol & Mario Squash / Side Collision
+            enemies.forEach(en => {
+                if (en.squashed) {
+                    en.squashTimer++;
+                    return;
+                }
+                en.x += en.vx;
+                if (en.x < en.minX || en.x > en.maxX) en.vx *= -1;
+
+                const ey = groundY - en.h;
+                if (player.x + player.w * 0.85 > en.x && player.x + player.w * 0.15 < en.x + en.w &&
+                    player.y + player.h > ey && player.y < ey + en.h) {
+
+                    // Player falling onto enemy top -> Squash!
+                    if (player.vy > 0 && player.y + player.h - player.vy <= ey + 18) {
+                        en.squashed = true;
+                        player.vy = -10.5; // Bounce up!
+                        state.score += 50;
+                        sfx.stomp();
+                        spawnParticles(en.x + en.w / 2, ey + 10, "#ef4444", 12);
+                        spawnFloatingText(en.x, ey - 10, "+50 HEBAT!", "#4ade80");
+                        updateHUD();
+                    }
+                    // Touched from side
+                    else if (player.invincibleTimer <= 0) {
+                        if (player.superAuraTimer > 0) {
+                            // Super star aura defeats enemy automatically!
+                            en.squashed = true;
+                            state.score += 50;
+                            sfx.stomp();
+                            spawnFloatingText(en.x, ey - 10, "⭐ MENTAL! +50", "#fbbf24");
+                            updateHUD();
+                        } else {
+                            // Trigger Emergency Quiz Shield!
+                            sfx.blockBump();
+                            triggerQuizModal('shield', en);
+                        }
+                    }
+                }
+            });
+
+            // 7. Fall into pit check
+            if (player.y > canvas.height + 60) {
+                sfx.wrong();
+                player.x = player.checkpointX;
+                player.y = 100;
+                player.vx = 0;
+                player.vy = 0;
+                showToast("☁️ Ups! Kamu terjatuh ke jurang, kembali ke Checkpoint terdekat!");
+            }
+
+            // 8. End of Level Flagpole Check
+            if (flagPole && !flagPole.reached && player.x + player.w >= flagPole.x) {
+                if (!flagPole.bossDefeated) {
+                    // Trigger Final Castle Boss Question first!
+                    player.x = flagPole.x - player.w - 5;
+                    triggerQuizModal('boss', flagPole);
+                } else {
+                    completeCurrentLevel();
+                }
+            }
+
+            // Timers & Camera Tracking
+            if (player.invincibleTimer > 0) player.invincibleTimer--;
+            if (player.superAuraTimer > 0) player.superAuraTimer--;
+
+            const targetCamX = Math.max(0, Math.min(cfg.length - canvas.width + 120, player.x - canvas.width * 0.32));
+            cameraX += (targetCamX - cameraX) * 0.14;
+
+            updateHUD();
+        }
+
+        function completeCurrentLevel() {
+            flagPole.reached = true;
+            sfx.levelClear();
+            state.score += 200;
+            spawnParticles(flagPole.x, getCanvasGroundY() - 160, "#fde047", 25);
+            updateHUD();
+
+            if (state.currentLevelIdx < LEVEL_CONFIGS.length - 1) {
+                state.currentLevelIdx++;
+                showToast(`🎉 Level Selesai! Bersiap menuju ${LEVEL_CONFIGS[state.currentLevelIdx].name}...`);
+                setTimeout(() => {
+                    buildLevel(state.currentLevelIdx);
+                }, 1400);
+            } else {
+                setTimeout(() => {
+                    showFinalReportScreen();
+                }, 1200);
+            }
+        }
+
+        /* ============================================================================
+         * 9. END OF GAME REPORT, PEDAGOGICAL FEEDBACK & CERTIFICATE GENERATOR
+         * ============================================================================ */
+        function showFinalReportScreen() {
+            state.isRunning = false;
+            document.getElementById('gameHud').classList.add('hidden');
+            document.getElementById('touchControls').classList.add('hidden');
+            document.getElementById('reportScreen').classList.remove('hidden');
+
+            const totalAnswered = state.answerHistory.length;
+            const correctCount = state.answerHistory.filter(a => a.correct).length;
+            const acc = totalAnswered > 0 ? Math.round((correctCount / totalAnswered) * 100) : 100;
+
+            let stars = "⭐⭐⭐";
+            let titleMsg = "Luar Biasa! Kamu Master Sistem Pernapasan & Gerak!";
+            let feedbackText = "Sangat Memuaskan! Kamu telah mampu menjelaskan mekanisme kerja sistem pernapasan (inspirasi, ekspirasi, fungsi alveolus) serta mekanisme kerja sistem gerak (rangka, sendi, dan otot) dengan sangat akurat. Pertahankan prestasimu!";
+            let cardClass = "mb-4 p-4 rounded-2xl border-2 border-emerald-300 bg-emerald-50";
+
+            if (totalAnswered === 0) {
+                stars = "⭐⭐";
+                titleMsg = "Petualangan Selesai! Ayo Sundul Blok [?] Lebih Banyak!";
+                feedbackText = "Kamu berhasil mencapai garis akhir dengan tangkas! Namun kamu belum membuka soal pada Blok Kuis [?]. Yuk mainkan lagi dan sundul blok emas [?] dari bawah untuk menguji pemahamanmu tentang Sistem Pernapasan dan Gerak!";
+                cardClass = "mb-4 p-4 rounded-2xl border-2 border-amber-300 bg-amber-50";
+            } else if (acc < 60) {
+                stars = "⭐";
+                titleMsg = "Tetap Semangat! Ayo Simak Video Materi & Coba Lagi!";
+                feedbackText = `Skor evaluasimu ${acc}%. Kamu sudah berusaha dengan baik, namun masih perlu menguatkan pemahaman tentang mekanisme kontraksi diafragma/otot serta jenis-jenis sendi. Buka menu '📖 Materi Inti' untuk menonton kembali Video Sistem Pernapasan lalu coba lagi ya!`;
+                cardClass = "mb-4 p-4 rounded-2xl border-2 border-red-300 bg-red-50";
+            } else if (acc < 85) {
+                stars = "⭐⭐";
+                titleMsg = "Hebat Sekali! Pemahaman IPAS Kamu Sudah Baik!";
+                feedbackText = `Skor evaluasimu ${acc}%. Kamu sudah memahami sebagian besar mekanisme sistem pernapasan dan gerak manusia. Pelajari kembali pembahasan soal yang masih keliru di bawah ini agar nilaimu mencapai 100%!`;
+                cardClass = "mb-4 p-4 rounded-2xl border-2 border-sky-300 bg-sky-50";
+            }
+
+            const starsEl = document.getElementById('reportStars');
+            const titleEl = document.getElementById('reportFeedbackTitle');
+            const fbCard = document.getElementById('repFeedbackCard');
+            const fbDetail = document.getElementById('repFeedbackDetail');
+
+            if (starsEl) starsEl.textContent = stars;
+            if (titleEl) titleEl.textContent = titleMsg;
+            if (fbCard) fbCard.className = cardClass;
+            if (fbDetail) fbDetail.textContent = feedbackText;
+
+            document.getElementById('repName').textContent = state.playerName;
+            document.getElementById('repClass').textContent = state.playerClass;
+            document.getElementById('repScore').textContent = state.score;
+            document.getElementById('repCoins').textContent = `🪙 ${state.coins} Koin Terkumpul`;
+            document.getElementById('repAccuracy').textContent = `${acc}%`;
+            document.getElementById('repCorrectCount').textContent = `${correctCount} dari ${totalAnswered} Soal Benar`;
+
+            const topicNames = {
+                campuran: "IPAS: Pernapasan & Gerak",
+                pernapasan: "IPAS: Sistem Pernapasan",
+                gerak: "IPAS: Sistem Gerak"
+            };
+            document.getElementById('repTopic').textContent = topicNames[state.topic] || "IPAS: Pernapasan & Gerak";
+            document.getElementById('repLevelReached').textContent = `Tamat Level ${state.currentLevelIdx + 1}`;
+
+            const reviewContainer = document.getElementById('repReviewList');
+            reviewContainer.innerHTML = '';
+
+            if (state.answerHistory.length === 0) {
+                reviewContainer.innerHTML = `<div class="text-slate-500 italic">Siswa menyelesaikan petualangan tanpa membuka blok kuis [?]. Disarankan menyundul blok [?] saat bermain untuk merekam hasil evaluasi!</div>`;
+            } else {
+                state.answerHistory.forEach((item, idx) => {
+                    const div = document.createElement('div');
+                    div.className = `p-2.5 rounded-xl border ${item.correct ? 'bg-emerald-50 border-emerald-200' : 'bg-red-50 border-red-200'}`;
+                    div.innerHTML = `
+                        <div class="font-bold text-slate-800">${idx + 1}. ${item.q}</div>
+                        <div class="mt-1 flex flex-wrap gap-3 text-xs">
+                            <span class="${item.correct ? 'text-emerald-700 font-bold' : 'text-red-600 font-bold'}">
+                                ${item.correct ? '✅ Dijawab Benar:' : '❌ Dijawab:'} ${item.chosenAns}
+                            </span>
+                            ${!item.correct ? `<span class="text-emerald-700 font-bold">✔️ Kunci: ${item.correctAns}</span>` : ''}
+                        </div>
+                        <div class="text-[11px] text-slate-600 mt-1">💡 ${item.exp}</div>
+                    `;
+                    reviewContainer.appendChild(div);
+                });
+            }
+        }
+
+        /* ============================================================================
+         * 10. ARTISTIC RETRO MARIO CANVAS DRAW ROUTINES
+         * ============================================================================ */
+        function drawScene() {
+            const cfg = LEVEL_CONFIGS[state.currentLevelIdx] || LEVEL_CONFIGS[0];
+            const groundY = getCanvasGroundY();
+
+            // 1. Sky Gradient
+            const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            grad.addColorStop(0, cfg.skyTop);
+            grad.addColorStop(1, cfg.skyBottom);
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.save();
+            ctx.translate(-cameraX, 0);
+
+            // 2. Parallax Clouds & Background Hills
+            decorClouds.forEach(c => {
+                c.x -= c.speed * 0.3;
+                if (c.x + c.w < 0) c.x = cfg.length;
+                ctx.fillStyle = "rgba(255,255,255,0.88)";
+                ctx.beginPath();
+                ctx.roundRect(c.x, c.y, c.w, 38, 20);
+                ctx.fill();
+            });
+
+            decorHills.forEach(h => {
+                ctx.fillStyle = state.currentLevelIdx === 2 ? "#312e81" : "#10b981";
+                ctx.strokeStyle = "#064e3b";
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.arc(h.x + h.w / 2, groundY, h.w / 2, Math.PI, 0);
+                ctx.fill();
+                ctx.stroke();
+            });
+
+            // 3. Platforms & Ground Bricks
+            platforms.forEach(plat => {
+                const py = groundY - plat.yOffset;
+                if (plat.type === 'ground') {
+                    // Grass lip
+                    ctx.fillStyle = cfg.grassColor;
+                    ctx.fillRect(plat.x, py, plat.w, 16);
+                    // Brick earth
+                    ctx.fillStyle = cfg.groundColor;
+                    ctx.fillRect(plat.x, py + 16, plat.w, plat.h - 16);
+                    ctx.strokeStyle = "#27272a";
+                    ctx.lineWidth = 3;
+                    ctx.strokeRect(plat.x, py, plat.w, plat.h);
+                } else {
+                    // Moving platform
+                    ctx.fillStyle = "#f59e0b";
+                    ctx.strokeStyle = "#78350f";
+                    ctx.lineWidth = 3;
+                    ctx.beginPath();
+                    ctx.roundRect(plat.x, py, plat.w, plat.h, 8);
+                    ctx.fill();
+                    ctx.stroke();
+                }
+            });
+
+            // 4. Green Warp Pipes & Checkpoints
+            pipes.forEach(pipe => {
+                const py = groundY - pipe.h;
+                const pipeGrad = ctx.createLinearGradient(pipe.x, py, pipe.x + pipe.w, py);
+                pipeGrad.addColorStop(0, "#15803d");
+                pipeGrad.addColorStop(0.4, "#4ade80");
+                pipeGrad.addColorStop(1, "#14532d");
+
+                ctx.fillStyle = pipeGrad;
+                ctx.strokeStyle = "#052e16";
+                ctx.lineWidth = 3;
+                // Pipe body
+                ctx.fillRect(pipe.x + 4, py + 22, pipe.w - 8, pipe.h - 22);
+                ctx.strokeRect(pipe.x + 4, py + 22, pipe.w - 8, pipe.h - 22);
+                // Pipe rim
+                ctx.fillRect(pipe.x, py, pipe.w, 22);
+                ctx.strokeRect(pipe.x, py, pipe.w, 22);
+
+                if (pipe.isCheckpoint) {
+                    ctx.fillStyle = pipe.activated ? "#4ade80" : "#fde047";
+                    ctx.font = "bold 11px Fredoka";
+                    ctx.textAlign = "center";
+                    ctx.fillText(pipe.activated ? "✓ AMAN" : "🚩 POS", pipe.x + pipe.w / 2, py - 8);
+                }
+            });
+
+            // 5. Brick Blocks & Golden [?] Question Blocks
+            blocks.forEach(b => {
+                const by = groundY - b.yOffset + b.bounceY;
+                ctx.lineWidth = 3;
+                if (b.type === 'question') {
+                    ctx.fillStyle = b.used ? "#94a3b8" : "#fbbf24";
+                    ctx.strokeStyle = "#451a03";
+                    ctx.beginPath();
+                    ctx.roundRect(b.x, by, b.w, b.h, 6);
+                    ctx.fill();
+                    ctx.stroke();
+
+                    // Corner rivets
+                    ctx.fillStyle = "#78350f";
+                    ctx.fillRect(b.x + 4, by + 4, 3, 3);
+                    ctx.fillRect(b.x + b.w - 7, by + 4, 3, 3);
+                    ctx.fillRect(b.x + 4, by + b.h - 7, 3, 3);
+                    ctx.fillRect(b.x + b.w - 7, by + b.h - 7, 3, 3);
+
+                    ctx.fillStyle = b.used ? "#475569" : "#78350f";
+                    ctx.font = "bold 20px 'Press Start 2P'";
+                    ctx.textAlign = "center";
+                    ctx.fillText(b.used ? "✓" : "?", b.x + b.w / 2, by + b.h - 12);
+                } else {
+                    ctx.fillStyle = "#b45309";
+                    ctx.strokeStyle = "#451a03";
+                    ctx.beginPath();
+                    ctx.roundRect(b.x, by, b.w, b.h, 4);
+                    ctx.fill();
+                    ctx.stroke();
+                    // Brick mortar lines
+                    ctx.beginPath();
+                    ctx.moveTo(b.x, by + b.h / 2);
+                    ctx.lineTo(b.x + b.w, by + b.h / 2);
+                    ctx.moveTo(b.x + b.w / 2, by);
+                    ctx.lineTo(b.x + b.w / 2, by + b.h / 2);
+                    ctx.stroke();
+                }
+            });
+
+            // 6. Collectible Coins
+            coins.forEach(c => {
+                if (c.collected) return;
+                const cy = groundY - c.yOffset + Math.sin(c.bob) * 5;
+                ctx.fillStyle = "#fde047";
+                ctx.strokeStyle = "#b45309";
+                ctx.lineWidth = 2.5;
+                ctx.beginPath();
+                ctx.ellipse(c.x + 12, cy + 12, 10, 13, 0, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.stroke();
+                ctx.fillStyle = "#b45309";
+                ctx.font = "bold 11px Fredoka";
+                ctx.textAlign = "center";
+                ctx.fillText("★", c.x + 12, cy + 16);
+            });
+
+            // 7. Enemies (Cute Patrolling Goomba/Slime Monsters)
+            enemies.forEach(en => {
+                if (en.squashed && en.squashTimer > 20) return;
+                const ey = en.squashed ? groundY - 14 : groundY - en.h;
+                const eh = en.squashed ? 14 : en.h;
+
+                ctx.fillStyle = "#dc2626";
+                ctx.strokeStyle = "#450a0a";
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.roundRect(en.x, ey, en.w, eh, [18, 18, 6, 6]);
+                ctx.fill();
+                ctx.stroke();
+
+                if (!en.squashed) {
+                    // Eyes
+                    ctx.fillStyle = "#ffffff";
+                    ctx.fillRect(en.x + 7, ey + 10, 8, 10);
+                    ctx.fillRect(en.x + 25, ey + 10, 8, 10);
+                    ctx.fillStyle = "#000000";
+                    ctx.fillRect(en.x + 10, ey + 13, 4, 6);
+                    ctx.fillRect(en.x + 27, ey + 13, 4, 6);
+                }
+            });
+
+            // 8. End of Level Flagpole & Castle
+            if (flagPole) {
+                const fx = flagPole.x;
+                const poleH = 230;
+                // Castle Building behind flag
+                ctx.fillStyle = "#78350f";
+                ctx.strokeStyle = "#27272a";
+                ctx.lineWidth = 3;
+                ctx.fillRect(fx + 55, groundY - 140, 120, 140);
+                ctx.strokeRect(fx + 55, groundY - 140, 120, 140);
+                // Castle Door
+                ctx.fillStyle = "#1e293b";
+                ctx.beginPath();
+                ctx.roundRect(fx + 95, groundY - 65, 40, 65, [20, 20, 0, 0]);
+                ctx.fill();
+
+                // Pole
+                ctx.fillStyle = "#e2e8f0";
+                ctx.fillRect(fx, groundY - poleH, 8, poleH);
+                ctx.strokeRect(fx, groundY - poleH, 8, poleH);
+                // Top Gold Orb
+                ctx.fillStyle = "#fbbf24";
+                ctx.beginPath();
+                ctx.arc(fx + 4, groundY - poleH, 11, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.stroke();
+                // Banner Flag
+                ctx.fillStyle = flagPole.bossDefeated ? "#22c55e" : "#ef4444";
+                ctx.beginPath();
+                ctx.moveTo(fx + 8, groundY - poleH + 10);
+                ctx.lineTo(fx + 68, groundY - poleH + 30);
+                ctx.lineTo(fx + 8, groundY - poleH + 50);
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
+            }
+
+            // 9. Draw Player (Budi or Siti in Retro Overalls & Cap)
+            if (player) {
+                ctx.save();
+                if (player.invincibleTimer > 0 && Math.floor(player.invincibleTimer / 4) % 2 === 0) {
+                    ctx.globalAlpha = 0.45;
+                }
+
+                // Golden Super Star Aura
+                if (player.superAuraTimer > 0) {
+                    ctx.fillStyle = "rgba(250, 204, 21, 0.35)";
+                    ctx.beginPath();
+                    ctx.arc(player.x + player.w / 2, player.y + player.h / 2, 36 + Math.sin(Date.now() * 0.02) * 4, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+
+                const mainColor = state.character === 'budi' ? "#ef4444" : "#10b981";
+                const overallColor = "#1d4ed8";
+
+                // Legs (Animated walk)
+                const legOffset = Math.sin(player.animFrame) * 6;
+                ctx.fillStyle = overallColor;
+                ctx.strokeStyle = "#0f172a";
+                ctx.lineWidth = 2.5;
+                ctx.fillRect(player.x + 8 + legOffset, player.y + 38, 10, 14);
+                ctx.strokeRect(player.x + 8 + legOffset, player.y + 38, 10, 14);
+                ctx.fillRect(player.x + 24 - legOffset, player.y + 38, 10, 14);
+                ctx.strokeRect(player.x + 24 - legOffset, player.y + 38, 10, 14);
+
+                // Torso & Overalls
+                ctx.fillStyle = mainColor;
+                ctx.beginPath();
+                ctx.roundRect(player.x + 5, player.y + 20, player.w - 10, 22, 6);
+                ctx.fill();
+                ctx.stroke();
+
+                // Head
+                ctx.fillStyle = "#fed7aa";
+                ctx.beginPath();
+                ctx.roundRect(player.x + 6, player.y + 4, player.w - 12, 20, 8);
+                ctx.fill();
+                ctx.stroke();
+
+                // Hero Cap
+                ctx.fillStyle = mainColor;
+                ctx.beginPath();
+                ctx.roundRect(player.x + 4, player.y, player.w - 8, 9, [6, 6, 0, 0]);
+                ctx.fill();
+                ctx.stroke();
+                // Cap visor pointing in facing direction
+                const visorX = player.facing === 1 ? player.x + 18 : player.x - 2;
+                ctx.fillRect(visorX, player.y + 5, 22, 5);
+                ctx.strokeRect(visorX, player.y + 5, 22, 5);
+
+                // Eye
+                const eyeX = player.facing === 1 ? player.x + 26 : player.x + 12;
+                ctx.fillStyle = "#0f172a";
+                ctx.fillRect(eyeX, player.y + 11, 4, 6);
+
+                ctx.restore();
+            }
+
+            // 10. Particles & Floating Score Popups
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const p = particles[i];
+                p.x += p.vx;
+                p.y += p.vy;
+                p.life--;
+                ctx.fillStyle = p.color;
+                ctx.fillRect(p.x, p.y, p.size, p.size);
+                if (p.life <= 0) particles.splice(i, 1);
+            }
+
+            for (let i = floatingTexts.length - 1; i >= 0; i--) {
+                const ft = floatingTexts[i];
+                ft.y -= 1.2;
+                ft.life--;
+                ctx.font = "bold 14px 'Press Start 2P'";
+                ctx.fillStyle = "#000000";
+                ctx.fillText(ft.text, ft.x + 2, ft.y + 2);
+                ctx.fillStyle = ft.color;
+                ctx.fillText(ft.text, ft.x, ft.y);
+                if (ft.life <= 0) floatingTexts.splice(i, 1);
+            }
+
+            ctx.restore();
+        }
+
+        function gameLoop() {
+            updatePhysics();
+            drawScene();
+            requestAnimationFrame(gameLoop);
+        }
+
+        /* ============================================================================
+         * 11. KEYBOARD & MULTI-TOUCH CONTROLS SETUP
+         * ============================================================================ */
+        window.addEventListener('keydown', (e) => {
+            if (state.inQuiz) return;
+            if (e.code === 'ArrowLeft' || e.code === 'KeyA') keys.left = true;
+            if (e.code === 'ArrowRight' || e.code === 'KeyD') keys.right = true;
+            if (e.code === 'Space' || e.code === 'ArrowUp' || e.code === 'KeyW') {
+                keys.jump = true;
+                e.preventDefault();
+            }
+            if (e.code === 'Escape') togglePauseMenu();
+        });
+
+        window.addEventListener('keyup', (e) => {
+            if (e.code === 'ArrowLeft' || e.code === 'KeyA') keys.left = false;
+            if (e.code === 'ArrowRight' || e.code === 'KeyD') keys.right = false;
+            if (e.code === 'Space' || e.code === 'ArrowUp' || e.code === 'KeyW') keys.jump = false;
+        });
+
+        function bindTouchButton(btnId, keyName) {
+            const btn = document.getElementById(btnId);
+            if (!btn) return;
+
+            const activate = (e) => {
+                e.preventDefault();
+                keys[keyName] = true;
+                btn.classList.add('active-touch');
+            };
+            const deactivate = (e) => {
+                e.preventDefault();
+                keys[keyName] = false;
+                btn.classList.remove('active-touch');
+            };
+
+            btn.addEventListener('touchstart', activate, { passive: false });
+            btn.addEventListener('touchend', deactivate, { passive: false });
+            btn.addEventListener('touchcancel', deactivate, { passive: false });
+            btn.addEventListener('mousedown', activate);
+            btn.addEventListener('mouseup', deactivate);
+            btn.addEventListener('mouseleave', deactivate);
+        }
+
+        window.onload = function () {
+            bindTouchButton('btnLeft', 'left');
+            bindTouchButton('btnRight', 'right');
+            bindTouchButton('btnJump', 'jump');
+            buildLevel(0);
+            gameLoop();
+        };
+    </script>
+</body>
+</html>
